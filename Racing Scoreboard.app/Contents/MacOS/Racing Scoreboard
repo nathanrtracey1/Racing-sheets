@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Racing Scoreboard — native window launcher
-# Requires Python 3.10+ (python.org or Homebrew). Python 3.9 from Xcode CLT
-# does not work because pyobjc-core 12 dropped 3.9 support.
+# Uses a .venv inside the repo so it works with Homebrew Python (PEP 668).
 
 # Resolve this script's real path (handles symlinks)
 SOURCE="${BASH_SOURCE[0]}"
@@ -13,10 +12,9 @@ done
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # MacOS/ → Contents/ → .app/ → repo/
 REPO_DIR="$(dirname "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+VENV="$REPO_DIR/.venv"
 
 # ── Find Python 3.10+ ─────────────────────────────────────────────────────────
-# python.org installs to /Library/Frameworks/Python.framework/...
-# Homebrew installs to /opt/homebrew/bin/ (Apple Silicon) or /usr/local/bin/ (Intel)
 PYTHON=""
 for candidate in \
     /Library/Frameworks/Python.framework/Versions/3.14/bin/python3.14 \
@@ -46,22 +44,31 @@ for candidate in \
 done
 
 if [ -z "$PYTHON" ]; then
-    osascript -e 'display alert "Python 3.10+ Required" message "Install Python 3.12 (free) from python.org, then reopen this app. The built-in macOS Python 3.9 is too old for this app." as critical'
+    osascript -e 'display alert "Python 3.10+ Required" message "Install Python 3.12 (free) from python.org, then reopen this app." as critical'
     open "https://www.python.org/downloads/"
     exit 1
 fi
 
-# ── Install pywebview once if missing ─────────────────────────────────────────
-if ! "$PYTHON" -c "import webview" 2>/dev/null; then
-    CHOICE=$(osascript <<'AS' 2>/dev/null
-display dialog "Racing Scoreboard needs pywebview for its native window (one-time setup, ~5 MB)." & return & "Connect to the internet, then click Install." buttons {"Cancel", "Install"} default button "Install" with icon note
-AS
-)
-    [[ "$CHOICE" != *"Install"* ]] && exit 0
-    "$PYTHON" -m pip install pywebview --quiet --user 2>&1 || {
-        osascript -e 'display alert "Install failed" message "Open Terminal and run the install command shown in launch.command, then reopen the app." as critical'
+# ── Create venv if it doesn't exist ──────────────────────────────────────────
+if [ ! -x "$VENV/bin/python" ]; then
+    osascript -e 'display notification "Setting up Racing Scoreboard (one-time)…" with title "Racing Scoreboard"'
+    "$PYTHON" -m venv "$VENV" || {
+        osascript -e 'display alert "Setup failed" message "Could not create virtual environment. Try running launch.command in Terminal for details." as critical'
         exit 1
     }
 fi
 
-exec "$PYTHON" "$REPO_DIR/app.py"
+# ── Install pywebview into venv if missing ────────────────────────────────────
+if ! "$VENV/bin/python" -c "import webview" 2>/dev/null; then
+    CHOICE=$(osascript <<'AS' 2>/dev/null
+display dialog "Racing Scoreboard needs pywebview (one-time setup, ~5 MB, requires internet)." buttons {"Cancel", "Install"} default button "Install" with icon note
+AS
+)
+    [[ "$CHOICE" != *"Install"* ]] && exit 0
+    "$VENV/bin/pip" install pywebview --quiet || {
+        osascript -e 'display alert "Install failed" message "Check your internet connection, then reopen the app." as critical'
+        exit 1
+    }
+fi
+
+exec "$VENV/bin/python" "$REPO_DIR/app.py"

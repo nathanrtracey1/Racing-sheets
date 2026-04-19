@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Racing Scoreboard — double-click to launch
-# Requires Python 3.10+ from python.org or Homebrew.
-# The built-in macOS Python 3.9 (Xcode CLT) is NOT compatible.
+# Uses a .venv inside the repo, compatible with Homebrew Python (PEP 668).
 
 cd "$(dirname "$0")"
+VENV=".venv"
 
 # ── Find Python 3.10+ ─────────────────────────────────────────────────────────
 PYTHON=""
@@ -35,29 +35,23 @@ for candidate in \
 done
 
 if [ -z "$PYTHON" ]; then
-    echo ""
-    echo "ERROR: Python 3.10 or newer is required."
-    echo "Your system Python is 3.9 (too old for pywebview)."
-    echo ""
-    echo "Fix: Download Python 3.12 from https://www.python.org/downloads/"
-    echo "     Install it, then run this file again."
-    echo ""
-    read -rp "Press Enter to close..."
-    exit 1
+    echo "ERROR: Python 3.10+ not found. Install from https://www.python.org/downloads/"
+    read -rp "Press Enter to close..."; exit 1
 fi
 
 echo "Using $PYTHON ($(${PYTHON} --version))"
 
+# ── Create venv if needed ─────────────────────────────────────────────────────
+if [ ! -x "$VENV/bin/python" ]; then
+    echo "Creating virtual environment (one-time)..."
+    "$PYTHON" -m venv "$VENV" || { echo "ERROR: venv creation failed."; read -rp "Press Enter..."; exit 1; }
+fi
+
 # ── Install pywebview if missing ──────────────────────────────────────────────
-if ! "$PYTHON" -c "import webview" 2>/dev/null; then
-    echo "Installing pywebview (one-time setup, ~5 MB, requires internet)..."
-    "$PYTHON" -m pip install pywebview --user || {
-        echo ""
-        echo "ERROR: Install failed. Try: $PYTHON -m pip install pywebview"
-        read -rp "Press Enter to close..."
-        exit 1
-    }
+if ! "$VENV/bin/python" -c "import webview" 2>/dev/null; then
+    echo "Installing pywebview (one-time, ~5 MB, requires internet)..."
+    "$VENV/bin/pip" install pywebview || { echo "ERROR: install failed."; read -rp "Press Enter..."; exit 1; }
     echo "Done!"
 fi
 
-exec "$PYTHON" app.py
+exec "$VENV/bin/python" app.py
