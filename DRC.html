@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F1EB;
+  --card: #FFFFFF;
+  --accent: #D7263D;
+  --accent2: #1B998B;
+  --gold: #F4A100;
+  --silver: #8D99AE;
+  --bronze: #C87533;
+  --text: #1D1D1D;
+  --muted: #6B7280;
+  --border: #E2DDD5;
+  --input-bg: #F9F7F3;
+  --elim: #FEE2E2;
+  --elim-text: #991B1B;
+  --safe: #D1FAE5;
+  --safe-text: #065F46;
+  --highlight-row: #FFFBEB;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 64px;
+}
+
+/* ── Setup Screen ── */
+.setup-screen {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100vh; padding: 32px;
+}
+.setup-screen h1 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 58px;
+  color: var(--accent); letter-spacing: 3px; line-height: 1;
+}
+.setup-screen .sub {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 17px;
+  font-weight: 600; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 36px;
+}
+.driver-count-pick { display: flex; gap: 16px; margin-bottom: 32px; }
+.count-btn {
+  width: 120px; height: 120px; border-radius: 16px;
+  border: 3px solid var(--border); background: var(--card);
+  cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; transition: all 0.15s;
+}
+.count-btn:hover { border-color: var(--accent); }
+.count-btn.selected { border-color: var(--accent); background: #FEF2F2; }
+.count-btn .num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+  color: var(--accent); line-height: 1;
+}
+.count-btn .lbl {
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.name-entry {
+  background: var(--card); border-radius: 14px; padding: 28px 32px;
+  border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  width: 100%; max-width: 480px; display: none;
+}
+.name-entry h2 {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 18px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted); margin-bottom: 16px; text-align: center;
+}
+.name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.name-input-wrap { display: flex; align-items: center; gap: 8px; }
+.name-input-wrap .idx {
+  font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+  color: var(--silver); width: 24px; text-align: right; flex-shrink: 0;
+}
+.name-input {
+  width: 100%; padding: 8px 12px; border: 1.5px solid var(--border);
+  border-radius: 7px; font-family: 'Barlow', sans-serif; font-size: 15px;
+  font-weight: 600; background: var(--input-bg); outline: none;
+  transition: border-color 0.15s;
+}
+.name-input:focus { border-color: var(--accent); }
+.start-btn {
+  display: block; margin: 20px auto 0; padding: 12px 40px;
+  background: var(--accent); color: #fff; border: none; border-radius: 10px;
+  font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 16px;
+  cursor: pointer; transition: background 0.15s;
+}
+.start-btn:hover { background: #B91C30; }
+
+/* ── Main Screen ── */
+.main-screen { display: none; padding: 24px; }
+.header { text-align: center; margin-bottom: 24px; }
+.header h1 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 56px;
+  letter-spacing: 3px; color: var(--accent); line-height: 1; margin-bottom: 2px;
+}
+.header .subtitle {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 17px;
+  font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 3px;
+}
+.slope-slammer {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold), #F9C846);
+  color: #1D1D1D; padding: 8px 16px 8px 20px; border-radius: 100px;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+  margin-top: 10px; box-shadow: 0 2px 8px rgba(244,161,0,0.3);
+}
+.slope-slammer .trophy { font-size: 18px; }
+.slammer-name-input {
+  background: transparent; border: none;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 15px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #1D1D1D; outline: none; width: 160px; padding: 0 4px 1px;
+}
+
+.rules-bar {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-bottom: 24px;
+}
+.rule-chip {
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 14px; font-size: 13px; font-weight: 500; color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.rule-chip strong { color: var(--accent); font-weight: 700; }
+
+.view-toggle-wrapper { text-align: center; margin-bottom: 18px; }
+.view-toggle {
+  display: inline-flex; gap: 4px; background: #E8E4DD;
+  border-radius: 8px; padding: 3px;
+}
+.view-btn {
+  font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 13px;
+  padding: 7px 18px; border: none; border-radius: 6px; cursor: pointer;
+  background: transparent; color: var(--muted); transition: all 0.15s;
+}
+.view-btn.active {
+  background: var(--card); color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.round-tabs {
+  display: flex; justify-content: center; gap: 5px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.round-tab {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 14px;
+  padding: 5px 14px; border: 2px solid var(--border); border-radius: 6px;
+  background: var(--card); cursor: pointer; color: var(--muted);
+  transition: all 0.15s; text-transform: uppercase; letter-spacing: 1px;
+}
+.round-tab.active { border-color: var(--accent); color: var(--accent); background: #FEF2F2; }
+.round-tab.final-tab { border-color: var(--gold); color: #A67600; background: #FFFBEB; }
+.round-tab.active.final-tab { border-color: var(--gold); color: var(--gold); background: #FFF7D6; }
+.round-tab:hover:not(.active) { border-color: var(--silver); color: var(--text); }
+
+.round-info {
+  text-align: center; margin-bottom: 14px; font-size: 14px;
+  color: var(--muted); font-weight: 500;
+}
+.round-info strong { color: var(--text); }
+
+.controls {
+  display: flex; justify-content: center; gap: 10px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+button {
+  font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 13px;
+  padding: 8px 16px; border: none; border-radius: 7px;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #B91C30; }
+.btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border) !important; }
+.btn-secondary:hover { background: #F0EDE7; }
+.btn-gold { background: linear-gradient(135deg, var(--gold), #F9C846); color: #1D1D1D; }
+.btn-gold:hover { filter: brightness(0.95); }
+
+.table-wrapper {
+  background: var(--card); border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid var(--border);
+  margin-bottom: 24px; overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; min-width: 500px; }
+thead th {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted);
+  padding: 13px 12px; text-align: center; border-bottom: 2px solid var(--border);
+  background: #FAFAF7;
+}
+thead th:first-child { text-align: center; width: 44px; }
+thead th:nth-child(2) { text-align: left; }
+td {
+  padding: 9px 12px; text-align: center; border-bottom: 1px solid var(--border);
+  font-size: 15px; font-weight: 500;
+}
+td:first-child { text-align: center; width: 44px; }
+td:nth-child(2) { text-align: left; font-weight: 700; font-size: 16px; }
+
+tbody tr { transition: background 0.1s; }
+tbody tr:hover:not(.eliminated) { background: var(--highlight-row); }
+tbody tr.eliminated { background: var(--elim); opacity: 0.55; }
+tbody tr.eliminated td { color: var(--elim-text); }
+tbody tr.eliminated td:nth-child(2) { text-decoration: line-through; }
+
+.rank-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px;
+  background: #F0EDE7; color: var(--muted);
+}
+.rank-1 { background: linear-gradient(135deg, #F4A100, #F9C846); color: #fff; box-shadow: 0 2px 6px rgba(244,161,0,0.3); }
+.rank-2 { background: linear-gradient(135deg, #8D99AE, #B8C4D4); color: #fff; }
+.rank-3 { background: linear-gradient(135deg, #C87533, #D4965A); color: #fff; }
+
+.score-input {
+  width: 52px; height: 32px; text-align: center;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 600;
+  background: var(--input-bg); color: var(--text); outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -moz-appearance: textfield;
+}
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.score-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(215,38,61,0.12);
+}
+.score-input:disabled { background: #E5E5E5; color: #AAA; cursor: not-allowed; }
+
+.total-cell {
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent);
+}
+
+.elim-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 2px 7px;
+  border-radius: 4px; background: var(--elim); color: var(--elim-text); margin-left: 5px;
+}
+.safe-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 2px 7px;
+  border-radius: 4px; background: var(--safe); color: var(--safe-text);
+}
+.winner-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px;
+  border-radius: 4px; background: linear-gradient(135deg, var(--gold), #F9C846);
+  color: #1D1D1D; margin-left: 5px;
+}
+.winner-banner {
+  text-align: center; background: linear-gradient(135deg, #FFF7D6, #FFFBEB);
+  border: 2px solid var(--gold); border-radius: 14px; padding: 28px 24px;
+  margin-bottom: 24px; box-shadow: 0 4px 20px rgba(244,161,0,0.15);
+}
+.winner-banner .crown { font-size: 48px; margin-bottom: 4px; }
+.winner-banner h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 40px;
+  color: var(--accent); letter-spacing: 2px;
+}
+.winner-banner .winner-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 52px;
+  color: var(--gold); letter-spacing: 2px;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+.modal {
+  background: var(--card); border-radius: 16px; padding: 32px;
+  max-width: 440px; width: 90%; box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+  text-align: center; animation: modalSlide 0.25s ease;
+}
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+  color: var(--accent); letter-spacing: 1px; margin-bottom: 8px;
+}
+.modal p {
+  font-size: 15px; color: var(--muted); margin-bottom: 20px; line-height: 1.5;
+}
+.modal .tied-names {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 20px; color: var(--text); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 6px;
+}
+.modal .tied-info {
+  font-size: 13px; color: var(--muted); margin-bottom: 20px;
+}
+.modal .race-off-label {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 14px; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 2px; margin-bottom: 14px;
+}
+.modal .pick-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.pick-btn {
+  padding: 10px 24px; border-radius: 8px; font-weight: 700; font-size: 15px;
+  background: var(--card); border: 2px solid var(--border) !important;
+  cursor: pointer; transition: all 0.15s; color: var(--text);
+}
+.pick-btn:hover { border-color: var(--accent) !important; background: #FEF2F2; color: var(--accent); }
+.modal .cancel-link {
+  display: inline-block; margin-top: 16px; font-size: 13px;
+  color: var(--muted); cursor: pointer; text-decoration: underline;
+}
+.modal .cancel-link:hover { color: var(--text); }
+
+.legend {
+  display: flex; justify-content: center; gap: 20px;
+  font-size: 12px; color: var(--muted); flex-wrap: wrap;
+}
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.new-season-wrap { text-align: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ SETUP SCREEN ═══════ -->
+<div class="setup-screen" id="setupScreen">
+  <h1>DRC Leaderboard</h1>
+  <div class="sub">Diecast Rally Championship</div>
+  <div class="driver-count-pick">
+    <button class="count-btn" onclick="pickCount(8)" id="btn8">
+      <div class="num">8</div><div class="lbl">Drivers</div>
+    </button>
+    <button class="count-btn" onclick="pickCount(16)" id="btn16">
+      <div class="num">16</div><div class="lbl">Drivers</div>
+    </button>
+  </div>
+  <div class="name-entry" id="nameEntry">
+    <h2>Name Your Drivers</h2>
+    <div class="name-grid" id="nameGrid"></div>
+    <button class="start-btn" onclick="startSeason()">Start Season</button>
+  </div>
+</div>
+
+<!-- ═══════ MAIN SCREEN ═══════ -->
+<div class="main-screen" id="mainScreen">
+  <div class="header">
+    <h1>DRC Leaderboard</h1>
+    <div class="subtitle">Diecast Rally Championship</div>
+    <div class="slope-slammer">
+      <span class="trophy">&#127942;</span>
+      Slope Slammer:&nbsp;
+      <input class="slammer-name-input" id="slammerInput" type="text" value="Hugh Jumpman"
+        onchange="saveSlammerName(this.value)">
+    </div>
+  </div>
+
+  <div class="rules-bar">
+    <div class="rule-chip"><strong>1 pt</strong> per checkpoint</div>
+    <div class="rule-chip"><strong>1 pt</strong> per Big Air</div>
+    <div class="rule-chip"><strong>2 pts</strong> for 1st place</div>
+    <div class="rule-chip">Head-to-head &middot; 2 races/round</div>
+    <div class="rule-chip">Bottom 2 eliminated each round</div>
+  </div>
+
+  <div class="view-toggle-wrapper">
+    <div class="view-toggle">
+      <button class="view-btn active" id="viewRound" onclick="setView('round')">Round View</button>
+      <button class="view-btn" id="viewStandings" onclick="setView('standings')">Standings</button>
+    </div>
+  </div>
+
+  <div id="roundControls">
+    <div class="round-tabs" id="roundTabs"></div>
+    <div class="round-info" id="roundInfo"></div>
+    <div class="controls" id="roundActions"></div>
+  </div>
+
+  <div id="bannerArea"></div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead id="tableHead"></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background: var(--gold);"></span> 1st</span>
+    <span><span class="dot" style="background: var(--silver);"></span> 2nd</span>
+    <span><span class="dot" style="background: var(--bronze);"></span> 3rd</span>
+    <span><span class="dot" style="background: var(--elim-text);"></span> Eliminated</span>
+  </div>
+
+  <div class="new-season-wrap">
+    <button class="btn-secondary" onclick="newSeason()" style="margin-top:12px;">New Season</button>
+  </div>
+</div>
+
+<!-- ═══════ MODAL ═══════ -->
+<div class="modal-overlay" id="modalOverlay" style="display:none;">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+// ──────── STATE ────────
+let driverCount = 0;
+let drivers = [];
+let scores = {};
+let eliminatedAfter = {};
+let currentRound = 0;
+let totalRounds = 0;
+let currentView = 'round';
+let slammerName = 'Hugh Jumpman';
+let winner = null;
+let viewingRound = null;
+let focusAfterRender = null; // {id, select}
+
+// ──────── SETUP ────────
+function pickCount(n) {
+  driverCount = n;
+  document.getElementById('btn8').classList.toggle('selected', n === 8);
+  document.getElementById('btn16').classList.toggle('selected', n === 16);
+  const grid = document.getElementById('nameGrid');
+  const names = new Array(n).fill('');
+  grid.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    grid.innerHTML += `<div class="name-input-wrap">
+      <span class="idx">${i+1}.</span>
+      <input class="name-input" type="text" id="dname-${i}" value="${names[i] || ''}"
+        placeholder="Driver ${i+1}"
+        onkeydown="handleNameKey(event, ${i}, ${n})">
+    </div>`;
+  }
+  document.getElementById('nameEntry').style.display = 'block';
+  setTimeout(() => document.getElementById('dname-0').focus(), 100);
+}
+
+function handleNameKey(e, idx, total) {
+  if (e.key === 'Enter' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = document.getElementById(`dname-${Math.min(idx + 1, total - 1)}`);
+    if (next) { next.focus(); next.select(); }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prev = document.getElementById(`dname-${Math.max(idx - 1, 0)}`);
+    if (prev) { prev.focus(); prev.select(); }
+  }
+}
+
+function startSeason() {
+  drivers = [];
+  for (let i = 0; i < driverCount; i++) {
+    const v = document.getElementById(`dname-${i}`).value.trim();
+    drivers.push(v || `Driver ${i+1}`);
+  }
+  totalRounds = (driverCount - 2) / 2 + 1;
+  scores = {}; eliminatedAfter = {}; winner = null; currentRound = 0;
+  drivers.forEach(d => { scores[d] = {}; });
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('mainScreen').style.display = 'block';
+  save(); render();
+}
+
+// ──────── PERSISTENCE ────────
+function save() {
+  try {
+    localStorage.setItem('drc2', JSON.stringify({
+      drivers, scores, eliminatedAfter, currentRound, totalRounds, driverCount, slammerName, winner
+    }));
+  } catch(e) {}
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('drc2'));
+    if (d && d.drivers && d.drivers.length) {
+      drivers = d.drivers; scores = d.scores || {};
+      eliminatedAfter = d.eliminatedAfter || {};
+      currentRound = d.currentRound || 0;
+      totalRounds = d.totalRounds || 1;
+      driverCount = d.driverCount || drivers.length;
+      slammerName = d.slammerName || 'Hugh Jumpman';
+      winner = d.winner || null;
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('mainScreen').style.display = 'block';
+      document.getElementById('slammerInput').value = slammerName;
+      render(); return true;
+    }
+  } catch(e) {}
+  return false;
+}
+function saveSlammerName(v) { slammerName = v; save(); }
+function newSeason() { localStorage.removeItem('drc2'); location.reload(); }
+
+// ──────── HELPERS ────────
+function isEliminated(driver) { return eliminatedAfter[driver] !== undefined; }
+function wasEliminatedBefore(driver, round) {
+  return eliminatedAfter[driver] !== undefined && eliminatedAfter[driver] < round;
+}
+function activeDriversInRound(round) {
+  return drivers.filter(d => !wasEliminatedBefore(d, round));
+}
+function getR1(d, r) { return (scores[d] && scores[d][r] && scores[d][r].r1) || 0; }
+function getR2(d, r) { return (scores[d] && scores[d][r] && scores[d][r].r2) || 0; }
+function getRoundTotal(d, r) { return getR1(d, r) + getR2(d, r); }
+function getGrandTotal(d) {
+  let t = 0; for (let r = 0; r < totalRounds; r++) t += getRoundTotal(d, r); return t;
+}
+function isFinalRound(r) { return r === totalRounds - 1; }
+
+function setScoreQuiet(driver, round, field, value) {
+  if (!scores[driver]) scores[driver] = {};
+  if (!scores[driver][round]) scores[driver][round] = { r1: 0, r2: 0 };
+  scores[driver][round][field] = value;
+  save();
+  // Update totals in DOM without full re-render
+  updateTotals(round);
+}
+
+function updateTotals(round) {
+  const roundDrivers = activeDriversInRound(round);
+  const orderedDrivers = drivers.filter(d => roundDrivers.includes(d));
+  orderedDrivers.forEach((d, i) => {
+    const rtEl = document.getElementById(`rt-${i}`);
+    const gtEl = document.getElementById(`gt-${i}`);
+    if (rtEl) rtEl.textContent = getRoundTotal(d, round);
+    if (gtEl) gtEl.textContent = getGrandTotal(d);
+  });
+}
+
+// ──────── ELIMINATION ────────
+function findTiedDrivers(round) {
+  const active = activeDriversInRound(round);
+  // Sort ascending by grand total, then by round total
+  const sorted = [...active].sort((a, b) => {
+    const diff = getGrandTotal(a) - getGrandTotal(b);
+    if (diff !== 0) return diff;
+    return getRoundTotal(a, round) - getRoundTotal(b, round);
+  });
+
+  if (isFinalRound(round)) {
+    // 2 drivers — check if tied
+    if (sorted.length === 2 &&
+        getGrandTotal(sorted[0]) === getGrandTotal(sorted[1]) &&
+        getRoundTotal(sorted[0], round) === getRoundTotal(sorted[1], round)) {
+      return { type: 'final-tie', drivers: [sorted[0], sorted[1]] };
+    }
+    return null;
+  }
+
+  // We need to eliminate bottom 2.
+  // Check: is position 2 (sorted[1]) tied with position 3 (sorted[2]) on both grand + round?
+  if (sorted.length >= 3) {
+    const b2 = sorted[1], b3 = sorted[2];
+    if (getGrandTotal(b2) === getGrandTotal(b3) &&
+        getRoundTotal(b2, round) === getRoundTotal(b3, round)) {
+      // Find all drivers tied at this level
+      const tiedTotal = getGrandTotal(b2);
+      const tiedRound = getRoundTotal(b2, round);
+      const tiedGroup = sorted.filter(d =>
+        getGrandTotal(d) === tiedTotal && getRoundTotal(d, round) === tiedRound
+      );
+      return { type: 'elim-tie', drivers: tiedGroup, mustEliminate: 1 };
+      // We know bottom1 (sorted[0]) is clear to eliminate.
+      // Among the tied group, user must pick who ALSO gets eliminated.
+    }
+  }
+
+  // Also check if bottom 1 is tied with bottom 2
+  if (sorted.length >= 3) {
+    const b1 = sorted[0], b2 = sorted[1];
+    if (getGrandTotal(b1) === getGrandTotal(b2) &&
+        getRoundTotal(b1, round) === getRoundTotal(b2, round)) {
+      // Check if b2 is also tied with b3
+      // (already handled above)
+      // If b1 tied with b2 but b2 NOT tied with b3, both go anyway
+    }
+  }
+
+  return null;
+}
+
+function eliminateBottom2(round, forcedLoser) {
+  const active = activeDriversInRound(round);
+  const sorted = [...active].sort((a, b) => {
+    const diff = getGrandTotal(a) - getGrandTotal(b);
+    if (diff !== 0) return diff;
+    return getRoundTotal(a, round) - getRoundTotal(b, round);
+  });
+
+  if (isFinalRound(round)) {
+    // Crown winner
+    const sortedDesc = [...active].sort((a, b) => {
+      const diff = getGrandTotal(b) - getGrandTotal(a);
+      if (diff !== 0) return diff;
+      return getRoundTotal(b, round) - getRoundTotal(a, round);
+    });
+    if (forcedLoser) {
+      winner = active.find(d => d !== forcedLoser);
+      eliminatedAfter[forcedLoser] = round;
+    } else {
+      winner = sortedDesc[0];
+      eliminatedAfter[sortedDesc[1]] = round;
+    }
+    save(); render();
+    return;
+  }
+
+  // Eliminate bottom 2
+  const toEliminate = [];
+
+  if (forcedLoser) {
+    // sorted[0] is the clear bottom, forcedLoser is the tiebreak pick
+    toEliminate.push(sorted[0]);
+    if (sorted[0] !== forcedLoser) toEliminate.push(forcedLoser);
+    else {
+      // forcedLoser IS sorted[0], pick sorted[1] too? No — forcedLoser was from the tied group
+      // Actually: sorted[0] might be in the tied group. Let's be safe:
+      // We always eliminate sorted[0] (lowest) + forcedLoser (user's pick from tie)
+      toEliminate.push(sorted[1]);
+    }
+  } else {
+    toEliminate.push(sorted[0], sorted[1]);
+  }
+
+  toEliminate.forEach(d => { eliminatedAfter[d] = round; });
+  currentRound++;
+  save();
+  viewingRound = currentRound;
+  render();
+}
+
+function doAdvance() {
+  const vr = activeViewRound();
+  if (vr !== currentRound || winner) return;
+
+  const tie = findTiedDrivers(currentRound);
+  if (tie) {
+    showTieModal(tie);
+    return;
+  }
+
+  eliminateBottom2(currentRound, null);
+}
+
+// ──────── MODAL ────────
+// pendingEliminations tracks losers picked so far in multi-pick scenarios
+let pendingEliminations = [];
+let pendingTie = null;
+
+function showTieModal(tie) {
+  const overlay = document.getElementById('modalOverlay');
+  const content = document.getElementById('modalContent');
+  pendingEliminations = [];
+  pendingTie = tie;
+
+  const active = activeDriversInRound(currentRound);
+  const sorted = [...active].sort((a, b) => {
+    const diff = getGrandTotal(a) - getGrandTotal(b);
+    if (diff !== 0) return diff;
+    return getRoundTotal(a, currentRound) - getRoundTotal(b, currentRound);
+  });
+
+  if (tie.type === 'final-tie') {
+    // Final: 2 drivers tied, ask who lost
+    const [d1, d2] = tie.drivers;
+    content.innerHTML = `
+      <h2>Race Off!</h2>
+      <p>The finalists are tied on both total points and this round's score. Have them race off!</p>
+      <div class="tied-names">${esc(d1)} vs ${esc(d2)}</div>
+      <div class="tied-info">Total: ${getGrandTotal(d1)} pts each &middot; Round: ${getRoundTotal(d1, currentRound)} pts each</div>
+      <div class="race-off-label">Who lost the race off?</div>
+      <div class="pick-btns">
+        <button class="pick-btn" onclick="pickLoser('${escAttr(d1)}')">${esc(d1)}</button>
+        <button class="pick-btn" onclick="pickLoser('${escAttr(d2)}')">${esc(d2)}</button>
+      </div>
+      <span class="cancel-link" onclick="closeModal()">Cancel</span>
+    `;
+  } else {
+    // Elimination tie: figure out how many losers we need to pick
+    const definiteOut = sorted[0];
+    const inTiedGroup = tie.drivers.includes(definiteOut);
+
+    let needToPick, alreadyOut;
+    if (inTiedGroup) {
+      // All tied at the very bottom — need to pick 2 losers from the group
+      needToPick = 2;
+      alreadyOut = [];
+    } else {
+      // definiteOut is clearly last, but tie among others for 2nd elimination slot
+      needToPick = 1;
+      alreadyOut = [definiteOut];
+    }
+
+    pendingTie.needToPick = needToPick;
+    pendingTie.alreadyOut = alreadyOut;
+
+    const names = tie.drivers.map(d => esc(d)).join(' & ');
+    const alreadyOutText = alreadyOut.length > 0
+      ? `<p><strong>${esc(alreadyOut[0])}</strong> is already eliminated (lowest score). There's a tie for who else goes home.</p>`
+      : `<p>These drivers are all tied at the bottom. ${needToPick} must be eliminated. Have them race off!</p>`;
+
+    const pickLabel = needToPick === 1
+      ? 'Who lost the race off?'
+      : 'Who lost the race off? (Pick ' + needToPick + ')';
+
+    content.innerHTML = `
+      <h2>Race Off!</h2>
+      ${alreadyOutText}
+      <div class="tied-names">${names}</div>
+      <div class="tied-info">All at ${getGrandTotal(tie.drivers[0])} total pts &middot; ${getRoundTotal(tie.drivers[0], currentRound)} pts this round</div>
+      <div class="race-off-label">${pickLabel}</div>
+      <div class="pick-btns" id="tiePickBtns">
+        ${tie.drivers.map(d => `<button class="pick-btn" id="pick-${escAttr(d)}" onclick="pickLoser('${escAttr(d)}')">${esc(d)}</button>`).join('')}
+      </div>
+      <span class="cancel-link" onclick="closeModal()">Cancel</span>
+    `;
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+  pendingEliminations = [];
+  pendingTie = null;
+}
+
+function pickLoser(loserName) {
+  if (!pendingTie) return;
+
+  if (pendingTie.type === 'final-tie') {
+    // Final: loser is eliminated, other wins
+    closeModal();
+    const active = activeDriversInRound(currentRound);
+    winner = active.find(d => d !== loserName);
+    eliminatedAfter[loserName] = currentRound;
+    save();
+    render();
+    return;
+  }
+
+  // Elimination round tie
+  pendingEliminations.push(loserName);
+
+  // Disable the picked button and mark it
+  const btn = document.getElementById(`pick-${escAttr(loserName)}`);
+  if (btn) {
+    btn.disabled = true;
+    btn.style.background = 'var(--elim)';
+    btn.style.color = 'var(--elim-text)';
+    btn.style.borderColor = 'var(--elim-text)';
+    btn.textContent = esc(loserName) + ' ✕';
+  }
+
+  if (pendingEliminations.length >= pendingTie.needToPick) {
+    // All losers picked — execute elimination
+    closeModal();
+    const allOut = [...(pendingTie.alreadyOut || []), ...pendingEliminations];
+    allOut.forEach(d => { eliminatedAfter[d] = currentRound; });
+    currentRound++;
+    save();
+    viewingRound = currentRound;
+    pendingEliminations = [];
+    pendingTie = null;
+    render();
+  }
+}
+
+// ──────── VIEW ────────
+function setView(v) {
+  currentView = v;
+  document.getElementById('viewRound').classList.toggle('active', v === 'round');
+  document.getElementById('viewStandings').classList.toggle('active', v === 'standings');
+  document.getElementById('roundControls').style.display = v === 'round' ? '' : 'none';
+  render();
+}
+function viewRound(r) { viewingRound = r; render(); }
+function activeViewRound() { return viewingRound !== null ? viewingRound : currentRound; }
+
+// ──────── INPUT NAVIGATION ────────
+function navTo(row, col) {
+  const target = document.getElementById(`si-${row}-${col}`);
+  if (target && !target.disabled) {
+    target.focus();
+    target.select();
+    return true;
+  }
+  return false;
+}
+
+// ──────── RENDER ────────
+function render() {
+  const vr = activeViewRound();
+  const thead = document.getElementById('tableHead');
+  const tbody = document.getElementById('tableBody');
+  const banner = document.getElementById('bannerArea');
+  banner.innerHTML = '';
+
+  if (winner) {
+    banner.innerHTML = `<div class="winner-banner">
+      <div class="crown">&#128081;</div>
+      <h2>Season Champion</h2>
+      <div class="winner-name">${esc(winner)}</div>
+    </div>`;
+  }
+
+  if (currentView === 'round') {
+    renderRoundTabs(vr);
+    renderRoundView(vr, thead, tbody);
+  } else {
+    document.getElementById('roundControls').style.display = 'none';
+    renderStandings(thead, tbody);
+  }
+
+  // Restore focus after render
+  if (focusAfterRender) {
+    const el = document.getElementById(focusAfterRender.id);
+    if (el) { el.focus(); if (focusAfterRender.select) el.select(); }
+    focusAfterRender = null;
+  }
+}
+
+function renderRoundTabs(vr) {
+  const container = document.getElementById('roundTabs');
+  let html = '';
+  for (let r = 0; r <= currentRound && r < totalRounds; r++) {
+    const active = r === vr ? 'active' : '';
+    const fin = isFinalRound(r) ? 'final-tab' : '';
+    const label = isFinalRound(r) ? 'Final' : `Round ${r + 1}`;
+    html += `<button class="round-tab ${active} ${fin}" onclick="viewRound(${r})">${label}</button>`;
+  }
+  container.innerHTML = html;
+
+  const info = document.getElementById('roundInfo');
+  const active = activeDriversInRound(vr);
+  info.innerHTML = isFinalRound(vr)
+    ? `<strong>The Final</strong> &mdash; ${active.length} drivers`
+    : `<strong>Round ${vr + 1}</strong> &mdash; ${active.length} drivers racing`;
+
+  const actions = document.getElementById('roundActions');
+  if (vr === currentRound && !winner) {
+    actions.innerHTML = `<button class="btn-gold" onclick="doAdvance()">
+      ${isFinalRound(vr) ? '&#128081; Crown Winner' : 'End Round & Eliminate Bottom 2'}
+    </button>`;
+  } else {
+    actions.innerHTML = '';
+  }
+}
+
+function renderRoundView(vr, thead, tbody) {
+  const roundDrivers = activeDriversInRound(vr);
+  const orderedDrivers = drivers.filter(d => roundDrivers.includes(d));
+  const locked = vr < currentRound || !!winner;
+  const driverCount = orderedDrivers.length;
+
+  thead.innerHTML = `<tr>
+    <th>#</th><th>Driver</th><th>Race 1</th><th>Race 2</th><th>Round</th><th>Total</th>
+  </tr>`;
+
+  tbody.innerHTML = orderedDrivers.map((driver, i) => {
+    const rt = getRoundTotal(driver, vr);
+    const gt = getGrandTotal(driver);
+    const elimThisRound = eliminatedAfter[driver] === vr;
+    const rowClass = elimThisRound ? 'eliminated' : '';
+    const r1Val = getR1(driver, vr);
+    const r2Val = getR2(driver, vr);
+    const dSafe = driver.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+    let r1Cell, r2Cell;
+    if (locked) {
+      r1Cell = `<td>${r1Val}</td>`;
+      r2Cell = `<td>${r2Val}</td>`;
+    } else {
+      r1Cell = `<td><input class="score-input" type="number" min="0"
+        id="si-${i}-0" value="${r1Val}"
+        data-row="${i}" data-col="0" data-max-row="${driverCount - 1}"
+        data-driver="${esc(driver)}" data-round="${vr}" data-field="r1"
+        ></td>`;
+      r2Cell = `<td><input class="score-input" type="number" min="0"
+        id="si-${i}-1" value="${r2Val}"
+        data-row="${i}" data-col="1" data-max-row="${driverCount - 1}"
+        data-driver="${esc(driver)}" data-round="${vr}" data-field="r2"
+        ></td>`;
+    }
+
+    const badge = elimThisRound ? '<span class="elim-badge">OUT</span>' : '';
+    const winBadge = (winner === driver) ? '<span class="winner-badge">&#128081; CHAMPION</span>' : '';
+
+    return `<tr class="${rowClass}">
+      <td><span class="rank-badge">${i + 1}</span></td>
+      <td>${esc(driver)}${badge}${winBadge}</td>
+      ${r1Cell}${r2Cell}
+      <td class="total-cell" id="rt-${i}">${rt}</td>
+      <td class="total-cell" id="gt-${i}">${gt}</td>
+    </tr>`;
+  }).join('');
+
+  // Attach event listeners via delegation (avoids inline handler issues)
+  if (!locked) {
+    tbody.querySelectorAll('.score-input').forEach(input => {
+      input.addEventListener('focus', function() { this.select(); });
+      input.addEventListener('input', function() {
+        const driver = this.dataset.driver;
+        const round = parseInt(this.dataset.round);
+        const field = this.dataset.field;
+        const val = parseInt(this.value) || 0;
+        if (!scores[driver]) scores[driver] = {};
+        if (!scores[driver][round]) scores[driver][round] = { r1: 0, r2: 0 };
+        scores[driver][round][field] = val;
+        save();
+        updateTotals(round);
+      });
+      input.addEventListener('keydown', function(e) {
+        const row = parseInt(this.dataset.row);
+        const col = parseInt(this.dataset.col);
+        const maxRow = parseInt(this.dataset.maxRow);
+
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (col < 1) navTo(row, col + 1);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (col > 0) navTo(row, col - 1);
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (row < maxRow) navTo(row + 1, col);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (row > 0) navTo(row - 1, col);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (row < maxRow) navTo(row + 1, col);
+        }
+      });
+    });
+  }
+}
+
+function renderStandings(thead, tbody) {
+  const sorted = [...drivers].sort((a, b) => {
+    const ea = isEliminated(a) ? 1 : 0;
+    const eb = isEliminated(b) ? 1 : 0;
+    if (ea !== eb) return ea - eb;
+    if (!ea && !eb) return getGrandTotal(b) - getGrandTotal(a);
+    if (eliminatedAfter[a] !== eliminatedAfter[b]) return eliminatedAfter[b] - eliminatedAfter[a];
+    return getGrandTotal(b) - getGrandTotal(a);
+  });
+
+  const roundHeaders = [];
+  for (let r = 0; r <= currentRound && r < totalRounds; r++) {
+    roundHeaders.push(isFinalRound(r) ? 'Final' : `R${r+1}`);
+  }
+
+  thead.innerHTML = `<tr>
+    <th>#</th><th>Driver</th>
+    ${roundHeaders.map(h => `<th>${h}</th>`).join('')}
+    <th>Total</th><th>Status</th>
+  </tr>`;
+
+  let rank = 0, prevTotal = -1;
+  tbody.innerHTML = sorted.map((driver, i) => {
+    const gt = getGrandTotal(driver);
+    const elim = isEliminated(driver);
+    if (!elim) {
+      if (gt !== prevTotal) rank = i + 1;
+      prevTotal = gt;
+    }
+
+    const rankDisplay = elim ? '&mdash;' : rank;
+    const rankClass = elim ? '' : (rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '');
+    const rowClass = elim ? 'eliminated' : '';
+
+    const roundCells = [];
+    for (let r = 0; r <= currentRound && r < totalRounds; r++) {
+      roundCells.push(wasEliminatedBefore(driver, r)
+        ? '<td>&mdash;</td>'
+        : `<td>${getRoundTotal(driver, r)}</td>`);
+    }
+
+    let status;
+    if (winner === driver) status = '<span class="winner-badge">&#128081; CHAMPION</span>';
+    else if (elim) status = `<span class="elim-badge">Out R${eliminatedAfter[driver] + 1}</span>`;
+    else status = '<span class="safe-badge">Active</span>';
+
+    return `<tr class="${rowClass}">
+      <td><span class="rank-badge ${rankClass}">${rankDisplay}</span></td>
+      <td>${esc(driver)}</td>
+      ${roundCells.join('')}
+      <td class="total-cell">${gt}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+// ──────── INIT ────────
+load();
+</script>
+</body>
+</html>

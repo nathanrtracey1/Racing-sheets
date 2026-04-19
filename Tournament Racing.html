@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slope Slammer Racing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --card: #ffffff;
+  --ink: #1a1718;
+  --ink2: #5c534d;
+  --ink3: #9c938b;
+  --ink4: #cdc6be;
+  --ink5: #e8e3dc;
+  --red: #d63031;
+  --red-bg: #ffeaea;
+  --orange: #e67e22;
+  --orange-bg: #fff4e6;
+  --gold: #d4a017;
+  --gold-bg: #fef9e7;
+  --gold-bdr: #f0d060;
+  --teal: #0d9488;
+  --teal-bg: #e6faf7;
+  --teal-bdr: #5eead4;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --purple: #7c3aed;
+  --silver: #6b7280;
+  --bronze: #b45309;
+  --shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+  --r: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Bricolage Grotesque', -apple-system, sans-serif;
+  background: var(--bg); color: var(--ink);
+  min-height: 100vh; padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* -- HEADER -- */
+.header {
+  background: var(--ink);
+  padding: 22px 28px;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+}
+.header svg { width: 34px; height: 34px; color: var(--gold); }
+.header h1 {
+  color: #fff; font-size: 1.35rem; font-weight: 800;
+  letter-spacing: 5px; text-transform: uppercase;
+}
+
+.wrap { max-width: 960px; margin: 0 auto; padding: 24px 18px; }
+
+/* -- CARD -- */
+.card {
+  background: var(--card); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 28px; margin-bottom: 16px;
+}
+
+/* -- TYPE -- */
+.lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2.5px;
+  color: var(--ink3); margin-bottom: 10px;
+}
+.hdg {
+  font-size: 1.3rem; font-weight: 800; color: var(--ink);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.hdg svg { width: 24px; height: 24px; color: var(--ink2); }
+
+/* -- BUTTONS -- */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  padding: 12px 22px; border: 2px solid var(--ink5);
+  border-radius: 12px; background: #fff;
+  font-family: inherit; font-weight: 700; font-size: 1.05rem;
+  cursor: pointer; transition: all 0.1s; color: var(--ink);
+}
+.chip:hover { border-color: var(--ink2); }
+.chip.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px; border: none; border-radius: 12px;
+  font-family: inherit; font-weight: 800; font-size: 1.05rem;
+  cursor: pointer; transition: all 0.12s; color: #fff;
+}
+.btn svg { width: 18px; height: 18px; }
+.btn-ink { background: var(--ink); }
+.btn-ink:hover { background: #2d2924; }
+.btn-teal { background: var(--teal); }
+.btn-teal:hover { background: #0f766e; }
+.btn-red { background: var(--red); }
+.btn-red:hover { background: #b71c1c; }
+.btn-ghost { background: none; color: var(--ink); border: 2px solid var(--ink5); }
+.btn-ghost:hover { border-color: var(--ink); }
+.btn:disabled { opacity: 0.28; cursor: default; pointer-events: none; }
+.btn-sm { padding: 10px 18px; font-size: 0.88rem; }
+
+/* -- TABS -- */
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 18px;
+  background: var(--card); border-radius: 12px;
+  padding: 4px; box-shadow: var(--shadow);
+}
+.tab {
+  flex: 1; padding: 12px 16px; border: none; border-radius: 10px;
+  background: transparent; font-family: inherit; font-weight: 700;
+  font-size: 0.95rem; cursor: pointer; color: var(--ink3);
+  transition: all 0.12s; display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.tab svg { width: 16px; height: 16px; }
+.tab:hover { color: var(--ink); background: rgba(0,0,0,0.03); }
+.tab.on { background: var(--ink); color: #fff; }
+.tab.on svg { color: #fff; }
+
+/* -- SETUP -- */
+.setup-r { margin-bottom: 20px; }
+
+.pts-strip {
+  display: flex; gap: 4px; border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+}
+.pts-s {
+  flex: 1; padding: 12px 4px; text-align: center; font-weight: 800;
+}
+.pts-s .v { font-family: 'JetBrains Mono'; font-size: 1.25rem; font-weight: 800; }
+.pts-s .k { font-size: 0.78rem; font-weight: 700; margin-top: 2px; }
+.ps1 { background: var(--gold-bg); color: var(--gold); }
+.ps2 { background: #f5f5f4; color: var(--silver); }
+.ps3 { background: var(--orange-bg); color: var(--bronze); }
+.ps4 { background: #f5f5f4; color: var(--ink3); }
+.psdnf { background: var(--red-bg); color: var(--red); }
+
+.info { text-align: center; font-size: 0.92rem; color: var(--ink3); font-weight: 500; padding: 4px 0; }
+
+/* -- DRIVER ENTRY -- */
+.grp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.grp-tag {
+  font-family: 'JetBrains Mono'; font-size: 0.78rem; font-weight: 700;
+  background: var(--ink); color: #fff; padding: 6px 14px; border-radius: 8px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+}
+.drv-grid { display: grid; gap: 10px; }
+.drv-row { display: flex; align-items: center; gap: 12px; }
+.drv-n {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.88rem;
+  color: #fff; flex-shrink: 0;
+}
+.dn1 { background: var(--red); }
+.dn2 { background: var(--blue); }
+.dn3 { background: var(--teal); }
+.dn4 { background: var(--purple); }
+.drv-row input {
+  flex: 1; padding: 13px 16px; border: 2px solid var(--ink5);
+  border-radius: 12px; background: #fff;
+  font-family: inherit; font-weight: 600; font-size: 1.05rem;
+  color: var(--ink); transition: border-color 0.1s;
+}
+.drv-row input:focus { outline: none; border-color: var(--ink); }
+.drv-row input::placeholder { color: var(--ink4); }
+
+/* -- RACE TABLE -- */
+.race-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.tag {
+  padding: 7px 14px; border-radius: 9px;
+  font-weight: 800; font-size: 0.82rem; letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.tag-d { background: var(--ink); color: #fff; }
+.tag-o { border: 2px solid var(--ink5); color: var(--ink2); }
+
+.kb-hint {
+  font-family: 'JetBrains Mono'; font-size: 0.75rem;
+  color: var(--ink3); font-weight: 600;
+  display: flex; align-items: center; gap: 6px; margin-left: auto;
+}
+.kb-key {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 24px; padding: 0 6px;
+  background: var(--ink5); border-radius: 5px;
+  font-size: 0.68rem; font-weight: 700; color: var(--ink2);
+}
+
+.rtable { width: 100%; border-collapse: collapse; }
+.rtable th {
+  padding: 12px 6px; text-align: center;
+  font-family: 'JetBrains Mono'; font-weight: 700; font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--ink3); border-bottom: 2px solid var(--ink5);
+}
+.rtable th:first-child { text-align: left; padding-left: 12px; }
+.rtable td {
+  padding: 10px 6px; text-align: center;
+  border-bottom: 1px solid var(--ink5);
+  font-size: 1.05rem; font-weight: 600;
+}
+.rtable td:first-child { text-align: left; padding-left: 12px; }
+.rtable .tot {
+  font-family: 'JetBrains Mono'; font-weight: 800; font-size: 1.2rem; color: var(--ink);
+}
+.rtable .spast {
+  font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1rem; color: var(--ink2);
+}
+.rtable .sfut { color: var(--ink4); }
+.drv-cell { display: flex; align-items: center; gap: 10px; }
+.drv-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* -- SCORE INPUTS -- */
+.sc-input {
+  width: 56px; height: 40px; border: 2px solid var(--ink5);
+  border-radius: 8px; background: #fff; text-align: center;
+  font-family: 'JetBrains Mono'; font-weight: 700; font-size: 1.05rem;
+  color: var(--ink); transition: border-color 0.12s;
+}
+.sc-input:focus { outline: none; border-color: var(--blue); background: var(--blue-bg); }
+.sc-input::placeholder { color: var(--ink4); }
+
+/* -- STANDINGS -- */
+.standings {
+  margin-top: 18px; padding: 16px 20px;
+  background: rgba(0,0,0,0.02); border: 1px solid var(--ink5);
+  border-radius: 12px;
+}
+.standings .lbl { margin-bottom: 8px; }
+.st-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0;
+}
+.st-row + .st-row { border-top: 1px solid var(--ink5); }
+.st-rank {
+  font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.82rem;
+  min-width: 24px; color: var(--ink3);
+}
+.st-rank.r1 { color: var(--gold); }
+.st-rank.r2 { color: var(--silver); }
+.st-name { flex: 1; font-weight: 700; font-size: 0.95rem; }
+.st-pts {
+  font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.88rem;
+  color: var(--ink2);
+}
+
+/* -- RESULTS -- */
+.rlist { display: grid; gap: 8px; margin-bottom: 18px; }
+.rrow {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-radius: 12px;
+  border: 2px solid var(--ink5); transition: all 0.1s;
+}
+.rrow.adv { border-color: var(--teal-bdr); background: var(--teal-bg); }
+.rrow.out { opacity: 0.38; }
+.rrank { font-family: 'JetBrains Mono'; font-weight: 800; font-size: 1.05rem; min-width: 28px; }
+.rrow.adv .rrank { color: var(--teal); }
+.rrow .rico { width: 20px; height: 20px; flex-shrink: 0; }
+.rrow.adv .rico { color: var(--teal); }
+.rrow.out .rico { color: var(--ink4); }
+.rname { flex: 1; font-weight: 700; font-size: 1.05rem; }
+.rpts { font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.95rem; color: var(--ink2); }
+.rbadge {
+  font-family: 'JetBrains Mono'; font-size: 0.68rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 2px;
+  padding: 4px 12px; border-radius: 7px;
+}
+.rrow.adv .rbadge { color: var(--teal); background: rgba(13,148,136,0.12); }
+.rrow.out .rbadge { color: var(--ink3); }
+
+/* -- WINNER -- */
+.wcard {
+  text-align: center; padding: 52px 28px;
+  background: linear-gradient(150deg, #fffdf5 0%, var(--gold-bg) 100%);
+  border: 3px solid var(--gold-bdr);
+  position: relative; overflow: hidden;
+}
+.wcard::before, .wcard::after {
+  content: ''; position: absolute;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: rgba(212,160,23,0.06);
+}
+.wcard::before { top: -90px; left: -70px; }
+.wcard::after { bottom: -90px; right: -70px; width: 280px; height: 280px; }
+.wico { width: 64px; height: 64px; color: var(--gold); margin: 0 auto 12px; position: relative; z-index: 1; }
+.wname { font-size: 2.4rem; font-weight: 800; color: var(--ink); position: relative; z-index: 1; }
+.wsub {
+  font-family: 'JetBrains Mono'; font-weight: 700; color: var(--ink2);
+  font-size: 0.88rem; letter-spacing: 3.5px; text-transform: uppercase;
+  margin-top: 6px; position: relative; z-index: 1;
+}
+
+/* -- PROGRESS -- */
+.prog { display: flex; align-items: center; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.pdot {
+  padding: 5px 12px; border-radius: 7px;
+  font-family: 'JetBrains Mono'; font-weight: 800; font-size: 0.68rem;
+  letter-spacing: 0.5px; background: var(--ink5); color: var(--ink3);
+}
+.pdot.on { background: var(--ink); color: #fff; }
+.pdot.ok { background: var(--teal); color: #fff; }
+.pdot.clickable { cursor: pointer; transition: opacity 0.12s; }
+.pdot.clickable:hover { opacity: 0.75; }
+.pdot.viewing { background: var(--blue); color: #fff; }
+.psep { color: var(--ink4); font-size: 0.6rem; }
+
+/* -- BRACKET -- */
+.bwrap { overflow-x: auto; padding: 4px 0; }
+.bracket-full { display: flex; gap: 0; align-items: stretch; min-height: 300px; }
+.bk-round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; padding: 0 6px; }
+.bk-rlabel {
+  font-family: 'JetBrains Mono'; font-size: 0.66rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--ink3); text-align: center; margin-bottom: 10px;
+}
+.bk-match {
+  border: 2px solid var(--ink5); border-radius: 10px;
+  overflow: hidden; background: #fff; margin: 6px 0;
+}
+.bk-slot {
+  padding: 10px 14px; font-weight: 700; font-size: 0.92rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--ink5); min-height: 40px;
+}
+.bk-slot:last-child { border-bottom: none; }
+.bk-slot.won { background: var(--teal-bg); color: var(--teal); }
+.bk-slot.lost { color: var(--ink4); }
+.bk-slot.empty { color: var(--ink4); font-style: italic; font-weight: 500; }
+.bk-connector {
+  display: flex; flex-direction: column; justify-content: space-around;
+  width: 24px; min-width: 24px;
+}
+.bk-conn-line { border-right: 2px solid var(--ink5); border-top: 2px solid var(--ink5); border-bottom: 2px solid var(--ink5); min-height: 40px; margin: 6px 0; border-radius: 0 6px 6px 0; }
+
+/* -- TIEBREAK -- */
+.tb-title {
+  font-size: 1.1rem; font-weight: 800; color: var(--orange);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.tb-sub {
+  font-size: 0.92rem; color: var(--ink2); margin-bottom: 18px; font-weight: 500;
+}
+.tb-drivers { display: grid; gap: 10px; }
+.tb-driver {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; border-radius: 12px;
+  border: 2px solid var(--ink5); background: #fff;
+  cursor: pointer; transition: all 0.12s;
+  font-weight: 700; font-size: 1.05rem;
+}
+.tb-driver:hover { border-color: var(--orange); background: var(--orange-bg); }
+.tb-driver .drv-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.tb-driver .tb-pts {
+  margin-left: auto; font-family: 'JetBrains Mono'; font-weight: 800;
+  font-size: 0.88rem; color: var(--ink3);
+}
+
+/* -- CONFIRM DIALOG -- */
+.confirm-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4); z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+.confirm-box {
+  background: #fff; border-radius: 16px; padding: 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15); max-width: 380px; width: 90%;
+  text-align: center;
+}
+.confirm-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+.confirm-box p { font-size: 0.95rem; color: var(--ink2); margin-bottom: 20px; }
+.confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+/* -- RESET BAR -- */
+.reset-bar {
+  display: flex; justify-content: flex-end; margin-bottom: 12px;
+}
+
+.nbar {
+  padding: 12px 18px; border-radius: 12px;
+  background: rgba(26,23,24,0.04); border: 1px solid var(--ink5);
+  font-size: 0.95rem; font-weight: 700; color: var(--ink2);
+  text-align: center; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.nbar svg { width: 18px; height: 18px; }
+
+.tc { text-align: center; }
+.mt16 { margin-top: 18px; }
+.mt12 { margin-top: 14px; }
+.mt8 { margin-top: 10px; }
+.mb12 { margin-bottom: 14px; }
+.fxb { display: flex; justify-content: space-between; align-items: center; }
+
+.fin { animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* -- EDIT SCORES -- */
+.edit-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border: none; background: none;
+  cursor: pointer; color: var(--ink3); padding: 0;
+  border-radius: 5px; transition: all 0.1s; vertical-align: middle;
+}
+.edit-btn:hover { color: var(--ink); background: var(--ink5); }
+.edit-btn svg { width: 13px; height: 13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-2-3.2-2H7c-1.3 0-2.5.5-3.4 1.4L2 11"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M5 11l1.5-1.5"/><path d="M14 11V8"/></svg>
+  <h1>Slope Slammer Racing</h1>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="dialog"></div>
+
+<script>
+const I = {
+  flag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`,
+  users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
+  trophy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 19.24 7 20v2"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 19.24 17 20v2"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  arrR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+  grid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
+  redo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>`,
+  zap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  pencil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`,
+  kb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/></svg>`,
+  list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
+};
+function ic(n,s) { return `<span style="display:inline-flex;align-items:center;justify-content:center;width:${s||18}px;height:${s||18}px;flex-shrink:0">${I[n]}</span>`; }
+
+const PL = [
+  { l:'1ST', p:5 }, { l:'2ND', p:3 }, { l:'3RD', p:2 }, { l:'4TH', p:1 }, { l:'DNF', p:0 },
+];
+const DCOL = ['var(--red)','var(--blue)','var(--teal)','var(--purple)'];
+const DCLS = ['dn1','dn2','dn3','dn4'];
+
+let S = {
+  ph:'setup', td:null, ac:null,
+  dr:[], gr:[], cg:0, cr:0,
+  sc:{}, gRes:[], adv:[],
+  bR:[], bri:0, bgi:0, br:0,
+  bSc:{}, bRes:[], abr:[],
+  win:null, deg:0,
+  tab:'race', // 'race', 'bracket', 'groups'
+  tieDrivers:[], // drivers involved in current tiebreak
+  tieScore:0, // the tied score
+  tiePfx:'gs', // 'gs' for group, 'br' for bracket
+  viewGi: -1, // -1 = not viewing a past group, >= 0 = viewing that group's scorecard
+  editRace: -1, // -1 = not editing, >= 0 = editing that race index in current view
+};
+
+function tot(scores) { return scores.reduce((s,v)=>s+(v===''||v===null?0:Number(v)||0),0); }
+
+function R() {
+  const inGame = S.ph !== 'setup';
+  let html = '';
+  if (inGame) html += vResetBar();
+  if (inGame && S.ph !== 'enter') html += vTabs();
+
+  if (S.tab === 'bracket' && inGame && S.ph !== 'enter' && S.ph !== 'setup') {
+    html += vBracketTab();
+  } else if (S.tab === 'groups' && inGame && S.ph !== 'enter' && S.ph !== 'setup') {
+    html += vGroupsTab();
+  } else if (S.viewGi >= 0 && S.gRes[S.viewGi]) {
+    html += vViewGroup(S.viewGi);
+  } else {
+    html += ({
+      setup:vSetup, enter:vEnter, race:vRace, gRes:vGRes,
+      bRace:vBRace, bRes:vBRes, win:vWin,
+      tiebreak:vTiebreak, bTiebreak:vTiebreak,
+    })[S.ph]();
+  }
+  document.getElementById('app').innerHTML = html;
+  if ((S.ph === 'race' || S.ph === 'bRace') && S.tab === 'race') focusFirstEmpty();
+}
+
+function focusFirstEmpty() {
+  setTimeout(()=>{
+    const inputs = document.querySelectorAll('.sc-input');
+    for (const inp of inputs) {
+      if (inp.value === '') { inp.focus(); return; }
+    }
+    const btn = document.querySelector('.submit-race');
+    if (btn) btn.focus();
+  }, 60);
+}
+
+// ====== RESET ======
+function vResetBar() {
+  return `<div class="reset-bar">
+    <button class="btn btn-ghost btn-sm" onclick="confirmReset()">${ic('redo',14)} Reset</button>
+  </div>`;
+}
+function confirmReset() {
+  document.getElementById('dialog').innerHTML = `
+    <div class="confirm-overlay" onclick="if(event.target===this)closeDialog()">
+      <div class="confirm-box">
+        <h3>Reset Tournament?</h3>
+        <p>All progress will be lost. Are you sure?</p>
+        <div class="confirm-btns">
+          <button class="btn btn-ghost btn-sm" onclick="closeDialog()">Cancel</button>
+          <button class="btn btn-red btn-sm" onclick="doReset()">Reset</button>
+        </div>
+      </div>
+    </div>`;
+}
+function closeDialog() { document.getElementById('dialog').innerHTML = ''; }
+function doReset() {
+  closeDialog();
+  S={ph:'setup',td:null,ac:null,dr:[],gr:[],cg:0,cr:0,sc:{},gRes:[],adv:[],
+    bR:[],bri:0,bgi:0,br:0,bSc:{},bRes:[],abr:[],win:null,deg:0,tab:'race',
+    tieDrivers:[],tieScore:0,tiePfx:'gs',viewGi:-1,editRace:-1};
+  R();
+}
+
+// ====== TABS ======
+function vTabs() {
+  return `<div class="tabs">
+    <button class="tab ${S.tab==='race'?'on':''}" onclick="S.tab='race';S.viewGi=-1;S.editRace=-1;R()">${ic('flag',16)} Racing</button>
+    <button class="tab ${S.tab==='bracket'?'on':''}" onclick="S.tab='bracket';S.viewGi=-1;S.editRace=-1;R()">${ic('grid',16)} Bracket</button>
+    <button class="tab ${S.tab==='groups'?'on':''}" onclick="S.tab='groups';S.viewGi=-1;S.editRace=-1;R()">${ic('list',16)} Groups</button>
+  </div>`;
+}
+
+// ====== SETUP ======
+function vSetup() {
+  const info = S.td && S.ac ? calcInfo() : '';
+  return `<div class="card fin">
+    <div class="hdg">${ic('flag',24)} Tournament Setup</div>
+    <div class="setup-r">
+      <div class="lbl">Number of Drivers</div>
+      <div class="chips">
+        ${[4,8,16,32,64].map(n=>`<button class="chip ${S.td===n?'on':''}" onclick="S.td=${n};R()">${n}</button>`).join('')}
+      </div>
+    </div>
+    <div class="setup-r">
+      <div class="lbl">Advance Per Group</div>
+      <div class="chips">
+        <button class="chip ${S.ac===1?'on':''}" onclick="S.ac=1;R()">Top 1</button>
+        <button class="chip ${S.ac===2?'on':''}" onclick="S.ac=2;R()">Top 2</button>
+      </div>
+    </div>
+    <div class="lbl mt16">Points Per Race</div>
+    <div class="pts-strip">
+      ${PL.map((p,i)=>`<div class="pts-s ps${i<4?i+1:'dnf'}"><div class="v">${p.p}</div><div class="k">${p.l}</div></div>`).join('')}
+    </div>
+    ${info?`<div class="info">${info}</div>`:''}
+    <div class="tc mt12">
+      <button class="btn btn-ink" onclick="startT()" ${!S.td||!S.ac?'disabled':''}>${ic('play')} Let's Race</button>
+    </div>
+  </div>`;
+}
+function calcInfo() {
+  const g=S.td/4; let a=g*S.ac,br=0;
+  while(a>4){a=Math.ceil(a/4)*S.ac;br++;}
+  return `${S.td} drivers &middot; ${g} group${g>1?'s':''} of 4 &middot; top ${S.ac} advance${br?` &middot; ${br} bracket round${br>1?'s':''}`:''} &middot; final`;
+}
+function startT() {
+  if(!S.td||!S.ac) return;
+  S.dr=new Array(S.td).fill('');
+  S.deg=0; S.tab='race'; S.ph='enter'; R();
+  setTimeout(()=>{const el=document.getElementById('d0');if(el)el.focus();},50);
+}
+
+// ====== ENTER DRIVERS ======
+function vEnter() {
+  const gs=S.deg*4, tg=S.td/4;
+  const filled=[0,1,2,3].every(i=>S.dr[gs+i]?.trim());
+  return `<div class="card fin">
+    <div class="grp-header">
+      <div class="hdg" style="margin-bottom:0">${ic('users',24)} Enter Drivers</div>
+      <div class="grp-tag">Group ${S.deg+1} / ${tg}</div>
+    </div>
+    <div class="drv-grid">
+      ${[0,1,2,3].map(i=>{
+        const idx=gs+i;
+        return `<div class="drv-row">
+          <div class="drv-n ${DCLS[i]}">${i+1}</div>
+          <input type="text" id="d${i}" placeholder="Driver ${idx+1} name"
+            value="${esc(S.dr[idx]||'')}"
+            oninput="S.dr[${idx}]=this.value;ckF()"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();${i<3?`document.getElementById('d${i+1}').focus()`:'subDG()'}}" />
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="tc mt16">
+      <button class="btn btn-ink" id="nxt-btn" onclick="subDG()" ${!filled?'disabled':''}>
+        ${ic('arrR')} Start Racing
+      </button>
+    </div>
+  </div>`;
+}
+function esc(s) { return s.replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function ckF() {
+  const gs=S.deg*4;
+  const b=document.getElementById('nxt-btn');
+  if(b) b.disabled=[0,1,2,3].some(i=>!S.dr[gs+i]?.trim());
+}
+function subDG() {
+  const gs=S.deg*4;
+  if([0,1,2,3].some(i=>!S.dr[gs+i]?.trim())) return;
+  const grp = [gs, gs+1, gs+2, gs+3];
+  if (S.gr.length <= S.deg) S.gr.push(grp);
+  grp.forEach(d => { if(!S.sc[d]) S.sc[d]=['','','','']; });
+  S.cg = S.deg;
+  S.cr = 0;
+  S.tab = 'race';
+  S.ph = 'race';
+  R();
+}
+
+// ====== GROUP RACING ======
+function vRace() {
+  const g=S.gr[S.cg], r=S.cr;
+  const ok = g.every(d => S.sc[d][r] !== '' && S.sc[d][r] !== null);
+  const tg = S.td/4;
+  // Build standings
+  const stand = g.map(d=>({d, t:tot(S.sc[d])})).sort((a,b)=>b.t-a.t);
+  return `${vProg()}
+    <div class="card fin">
+      <div class="race-bar">
+        <span class="tag tag-d">Group ${S.cg+1} / ${tg}</span>
+        <span class="tag tag-o">Race ${r+1} / 4</span>
+        <div class="kb-hint">
+          ${ic('kb',16)}
+          <span class="kb-key">Enter</span> / <span class="kb-key">&uarr;&darr;</span> move
+        </div>
+      </div>
+      <table class="rtable"><thead><tr>
+        <th>Driver</th>${[0,1,2,3].map(x=>{
+          if(x<r) return `<th>R${x+1} <button class="edit-btn" onclick="startEdit(${x},'gs')" title="Edit R${x+1} scores">${I.pencil}</button></th>`;
+          return `<th>R${x+1}</th>`;
+        }).join('')}<th>Total</th>
+      </tr></thead><tbody>
+        ${g.map((d,di)=>{
+          const sc=S.sc[d];
+          return `<tr><td><div class="drv-cell"><div class="drv-dot" style="background:${DCOL[di]}"></div>${esc(S.dr[d])}</div></td>
+            ${[0,1,2,3].map(x=>{
+              if(x===r || (S.editRace===x && x<r)) {
+                return `<td><input class="sc-input" type="text" inputmode="numeric"
+                  data-did="${d}" data-race="${x}" data-di="${di}" data-pfx="gs"
+                  value="${sc[x]===''||sc[x]===null?'':sc[x]}"
+                  oninput="scIn(this,'gs',${d},${x})"
+                  onkeydown="scKey(event,this,'gs')"
+                  placeholder="-" /></td>`;
+              } else if(x<r) {
+                return `<td><span class="spast">${sc[x]===''||sc[x]===null?'0':sc[x]}</span></td>`;
+              } else {
+                return `<td><span class="sfut">-</span></td>`;
+              }
+            }).join('')}
+            <td class="tot">${tot(sc)}</td></tr>`;
+        }).join('')}
+      </tbody></table>
+      ${vStandings(stand)}
+      <div class="tc mt16">
+        <button class="btn btn-teal submit-race" onclick="submitGR()" ${!ok?'disabled':''}>${ic('arrR')} ${r<3?'Next Race':'Finish Group'}</button>
+      </div>
+    </div>`;
+}
+
+function vStandings(stand) {
+  return `<div class="standings">
+    <div class="lbl">Current Standings</div>
+    ${stand.map((s,i)=>`<div class="st-row">
+      <div class="st-rank ${i===0?'r1':i===1?'r2':''}">${i+1}.</div>
+      <div class="drv-dot" style="background:${DCOL[S.gr[S.cg]?.indexOf(s.d)??0]};width:8px;height:8px;border-radius:50%;flex-shrink:0"></div>
+      <div class="st-name">${esc(S.dr[s.d])}</div>
+      <div class="st-pts">${s.t} pts</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function scIn(el, pfx, d, r) {
+  const v = el.value.replace(/[^0-9]/g,'');
+  el.value = v;
+  const o = pfx==='gs' ? S.sc : S.bSc;
+  o[d][r] = v === '' ? '' : parseInt(v);
+  const grp = pfx==='gs' ? S.gr[S.cg] : S.bR[S.bri][S.bgi];
+  const race = pfx==='gs' ? S.cr : S.br;
+  const ok = grp.every(dd => o[dd][race] !== '' && o[dd][race] !== null);
+  const btn = document.querySelector('.submit-race');
+  if(btn) btn.disabled = !ok;
+  // Update totals in table
+  grp.forEach(dd => {
+    const cells = document.querySelectorAll('.tot');
+    // Just re-render standings
+  });
+  // Update standings live
+  const stand = grp.map(dd=>({d:dd, t:tot(o[dd])})).sort((a,b)=>b.t-a.t);
+  const stEl = document.querySelector('.standings');
+  if(stEl) {
+    stEl.innerHTML = `<div class="lbl">Current Standings</div>
+      ${stand.map((s,i)=>`<div class="st-row">
+        <div class="st-rank ${i===0?'r1':i===1?'r2':''}">${i+1}.</div>
+        <div style="background:${DCOL[grp.indexOf(s.d)%4]};width:8px;height:8px;border-radius:50%;flex-shrink:0"></div>
+        <div class="st-name">${esc(S.dr[s.d])}</div>
+        <div class="st-pts">${s.t} pts</div>
+      </div>`).join('')}`;
+  }
+  // Update tot cells
+  grp.forEach((dd,idx)=>{
+    const rows = document.querySelectorAll('.rtable tbody tr');
+    if(rows[idx]) {
+      const totCell = rows[idx].querySelector('.tot');
+      if(totCell) totCell.textContent = tot(o[dd]);
+    }
+  });
+}
+
+function scKey(e, el, pfx) {
+  const inputs = Array.from(document.querySelectorAll('.sc-input'));
+  const idx = inputs.indexOf(el);
+  if (e.key === 'Enter' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx < inputs.length - 1) {
+      inputs[idx+1].focus();
+      inputs[idx+1].select();
+    } else if (e.key === 'Enter') {
+      if (pfx==='gs') submitGR();
+      else submitBR();
+    }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) {
+      inputs[idx-1].focus();
+      inputs[idx-1].select();
+    }
+  }
+}
+
+function submitGR() {
+  const g=S.gr[S.cg];
+  if(g.some(d=>S.sc[d][S.cr]===''||S.sc[d][S.cr]===null)) return;
+  S.editRace=-1;
+  if(S.cr<3){S.cr++;R();return;}
+  const res=g.map(d=>({d,t:tot(S.sc[d])}));
+  res.sort((a,b)=>b.t-a.t);
+  // Check for tie at the advancement cutoff
+  const cutoffScore = res[S.ac-1].t; // score of last advancing position
+  const aboveCutoff = res.filter(r=>r.t>cutoffScore);
+  const atCutoff = res.filter(r=>r.t===cutoffScore);
+  const slotsNeeded = S.ac - aboveCutoff.length;
+  if (atCutoff.length > slotsNeeded) {
+    // Tie! Need a race-off among tied drivers
+    S.tieDrivers = atCutoff.map(r=>r.d);
+    S.tieScore = cutoffScore;
+    S.tiePfx = 'gs';
+    S.tieSlotsNeeded = slotsNeeded;
+    S.tieAbove = aboveCutoff.map(r=>r.d);
+    S.tieAllRes = res;
+    S.ph = 'tiebreak'; R(); return;
+  }
+  res.forEach((r,i)=>{r.adv=i<S.ac;r.rk=i+1;});
+  S.gRes.push(res);
+  res.filter(r=>r.adv).forEach(r=>S.adv.push(r.d));
+  S.ph='gRes'; R();
+}
+
+// ====== GROUP RESULTS ======
+function vGRes() {
+  const res=S.gRes[S.gRes.length-1];
+  const tg=S.td/4;
+  const last=S.cg>=tg-1;
+  const nxt=last?(S.adv.length<=4?'Final Race':'Start Bracket'):'Enter Next Group';
+  return `${vProg()}
+    <div class="card fin">
+      <div class="hdg">${ic('flag',24)} Group ${S.cg+1} Results</div>
+      <div class="rlist">
+        ${res.map(r=>`<div class="rrow ${r.adv?'adv':'out'}">
+          <div class="rrank">${r.rk}</div>
+          <span class="rico">${r.adv?I.check:I.x}</span>
+          <div class="rname">${esc(S.dr[r.d])}</div>
+          <div class="rpts">${r.t} pts</div>
+          <div class="rbadge">${r.adv?'ADV':'OUT'}</div>
+        </div>`).join('')}
+      </div>
+      <div class="tc">
+        <button class="btn btn-ink" onclick="nxtG()">${ic('arrR')} ${nxt}</button>
+      </div>
+    </div>`;
+}
+function nxtG() {
+  const tg=S.td/4;
+  if(S.cg<tg-1){
+    S.deg++;
+    S.ph='enter';
+    S.tab='race';
+    R();
+    setTimeout(()=>{const el=document.getElementById('d0');if(el)el.focus();},50);
+  }
+  else startB();
+}
+
+// ====== BRACKET ======
+function startB() {
+  const pool=[...S.adv];
+  if(pool.length<=1){S.win=S.dr[pool[0]];S.ph='win';R();return;}
+  setupBR(pool);
+}
+function setupBR(pool) {
+  const gs=[];
+  for(let i=0;i<pool.length;i+=4) gs.push(pool.slice(i,i+4));
+  S.bR.push(gs);
+  S.bri=S.bR.length-1; S.bgi=0; S.br=0;
+  S.bSc={}; S.bRes=[];
+  gs.flat().forEach(d=>S.bSc[d]=['','','','']);
+  S.tab='race';
+  S.ph='bRace'; R();
+}
+
+function vBRace() {
+  const rd=S.bR[S.bri],g=rd[S.bgi],r=S.br;
+  const nh=rd.length, fin=nh===1&&g.length<=4;
+  const ok=g.every(d=>S.bSc[d][r]!==''&&S.bSc[d][r]!==null);
+  const lbl=fin?'FINAL':`Bracket Rd ${S.bri+1}${nh>1?` / Heat ${S.bgi+1}`:''}`;
+  const stand = g.map(d=>({d, t:tot(S.bSc[d])})).sort((a,b)=>b.t-a.t);
+  return `${vProg()}
+    <div class="nbar">${ic('zap',16)} ${lbl} &mdash; Race ${r+1}/4</div>
+    <div class="card fin">
+      <div class="race-bar">
+        <div class="kb-hint" style="margin-left:0">
+          ${ic('kb',16)}
+          <span class="kb-key">Enter</span> / <span class="kb-key">&uarr;&darr;</span> move
+        </div>
+      </div>
+      <table class="rtable"><thead><tr>
+        <th>Driver</th>${[0,1,2,3].map(x=>`<th>R${x+1}</th>`).join('')}<th>Total</th>
+      </tr></thead><tbody>
+        ${g.map((d,di)=>{
+          const sc=S.bSc[d];
+          return `<tr><td><div class="drv-cell"><div class="drv-dot" style="background:${DCOL[di%4]}"></div>${esc(S.dr[d])}</div></td>
+            ${[0,1,2,3].map(x=>{
+              if(x===r) {
+                return `<td><input class="sc-input" type="text" inputmode="numeric"
+                  data-did="${d}" data-race="${x}" data-di="${di}" data-pfx="br"
+                  value="${sc[x]===''||sc[x]===null?'':sc[x]}"
+                  oninput="scIn(this,'br',${d},${x})"
+                  onkeydown="scKey(event,this,'br')"
+                  placeholder="-" /></td>`;
+              } else if(x<r) {
+                return `<td><span class="spast">${sc[x]===''||sc[x]===null?'0':sc[x]}</span></td>`;
+              } else {
+                return `<td><span class="sfut">-</span></td>`;
+              }
+            }).join('')}
+            <td class="tot">${tot(sc)}</td></tr>`;
+        }).join('')}
+      </tbody></table>
+      <div class="standings">
+        <div class="lbl">Current Standings</div>
+        ${stand.map((s,i)=>`<div class="st-row">
+          <div class="st-rank ${i===0?'r1':i===1?'r2':''}">${i+1}.</div>
+          <div style="background:${DCOL[g.indexOf(s.d)%4]};width:8px;height:8px;border-radius:50%;flex-shrink:0"></div>
+          <div class="st-name">${esc(S.dr[s.d])}</div>
+          <div class="st-pts">${s.t} pts</div>
+        </div>`).join('')}
+      </div>
+      <div class="tc mt16">
+        <button class="btn btn-teal submit-race" onclick="submitBR()" ${!ok?'disabled':''}>${ic('arrR')} ${r<3?'Next Race':'Finish Heat'}</button>
+      </div>
+    </div>`;
+}
+
+function submitBR() {
+  const rd=S.bR[S.bri],g=rd[S.bgi];
+  if(g.some(d=>S.bSc[d][S.br]===''||S.bSc[d][S.br]===null)) return;
+  if(S.br<3){S.br++;R();return;}
+  const res=g.map(d=>({d,t:tot(S.bSc[d])}));
+  res.sort((a,b)=>b.t-a.t);
+  const ac = rd.length===1 ? 1 : S.ac;
+  // Check for tie at cutoff
+  const cutoffScore = res[ac-1].t;
+  const aboveCutoff = res.filter(r=>r.t>cutoffScore);
+  const atCutoff = res.filter(r=>r.t===cutoffScore);
+  const slotsNeeded = ac - aboveCutoff.length;
+  if (atCutoff.length > slotsNeeded) {
+    S.tieDrivers = atCutoff.map(r=>r.d);
+    S.tieScore = cutoffScore;
+    S.tiePfx = 'br';
+    S.tieSlotsNeeded = slotsNeeded;
+    S.tieAbove = aboveCutoff.map(r=>r.d);
+    S.tieAllRes = res;
+    S.tieAc = ac;
+    S.ph = 'bTiebreak'; R(); return;
+  }
+  if(rd.length===1){
+    res.forEach((r,i)=>{r.adv=i===0;r.rk=i+1;});
+    S.abr.push({ri:S.bri,gi:0,res});
+    S.win=S.dr[res[0].d]; S.ph='win'; R(); return;
+  }
+  res.forEach((r,i)=>{r.adv=i<S.ac;r.rk=i+1;});
+  S.bRes.push(res);
+  S.abr.push({ri:S.bri,gi:S.bgi,res});
+  S.ph='bRes'; R();
+}
+
+// ====== TIEBREAK ======
+function vTiebreak() {
+  const isGroup = S.ph === 'tiebreak';
+  const grp = isGroup ? S.gr[S.cg] : S.bR[S.bri][S.bgi];
+  const label = isGroup ? `Group ${S.cg+1}` : (S.bR[S.bri].length===1 ? 'Final' : `Bracket Rd ${S.bri+1}`);
+  const slotsWord = S.tieSlotsNeeded === 1 ? '1 spot' : `${S.tieSlotsNeeded} spots`;
+  return `${vProg()}
+    <div class="card fin">
+      <div class="tb-title">${ic('zap',22)} Race-Off Required!</div>
+      <div class="tb-sub">${label}: ${S.tieDrivers.length} drivers tied at ${S.tieScore} pts for ${slotsWord}. Who wins the race-off?</div>
+      <div class="tb-drivers">
+        ${S.tieDrivers.map(d => {
+          const ci = grp.indexOf(d) % 4;
+          return `<div class="tb-driver" onclick="tieWin(${d})">
+            <div class="drv-dot" style="background:${DCOL[ci]}"></div>
+            <span>${esc(S.dr[d])}</span>
+            <span class="tb-pts">${S.tieScore} pts</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function tieWin(winnerId) {
+  const isGroup = S.ph === 'tiebreak';
+  const res = S.tieAllRes;
+  const ac = isGroup ? S.ac : (S.tieAc || S.ac);
+  // Build advancing set: those clearly above cutoff + the tiebreak winner(s)
+  const advSet = new Set(S.tieAbove);
+  // If we need more than 1 slot from the tie, we need multiple picks
+  // For simplicity, each click picks one winner; if more slots needed, re-prompt
+  advSet.add(winnerId);
+  S.tieDrivers = S.tieDrivers.filter(d => d !== winnerId);
+  S.tieSlotsNeeded--;
+  if (S.tieSlotsNeeded > 0 && S.tieDrivers.length > S.tieSlotsNeeded) {
+    // Still more ties to break
+    R(); return;
+  }
+  // If remaining slots === remaining drivers, they all advance
+  if (S.tieSlotsNeeded > 0) {
+    S.tieDrivers.forEach(d => advSet.add(d));
+  }
+  // Now finalize results
+  res.forEach((r,i) => {
+    r.adv = advSet.has(r.d);
+    r.rk = i + 1;
+  });
+  if (isGroup) {
+    S.gRes.push(res);
+    res.filter(r=>r.adv).forEach(r=>S.adv.push(r.d));
+    S.ph='gRes'; R();
+  } else {
+    const rd = S.bR[S.bri];
+    if(rd.length===1){
+      S.abr.push({ri:S.bri,gi:0,res});
+      // Winner is the single advancer
+      const winner = res.find(r=>r.adv);
+      S.win = S.dr[winner.d]; S.ph='win'; R(); return;
+    }
+    S.bRes.push(res);
+    S.abr.push({ri:S.bri,gi:S.bgi,res});
+    S.ph='bRes'; R();
+  }
+}
+
+function vBRes() {
+  const res=S.bRes[S.bRes.length-1];
+  const rd=S.bR[S.bri];
+  const last=S.bgi>=rd.length-1;
+  return `${vProg()}
+    <div class="card fin">
+      <div class="hdg">${ic('flag',24)} Bracket Rd ${S.bri+1}${rd.length>1?` / Heat ${S.bgi+1}`:''}</div>
+      <div class="rlist">
+        ${res.map(r=>`<div class="rrow ${r.adv?'adv':'out'}">
+          <div class="rrank">${r.rk}</div>
+          <span class="rico">${r.adv?I.check:I.x}</span>
+          <div class="rname">${esc(S.dr[r.d])}</div>
+          <div class="rpts">${r.t} pts</div>
+          <div class="rbadge">${r.adv?'ADV':'OUT'}</div>
+        </div>`).join('')}
+      </div>
+      <div class="tc mt12">
+        <button class="btn btn-ink" onclick="nxtBR()">${ic('arrR')} ${last?'Next Round':`Heat ${S.bgi+2}`}</button>
+      </div>
+    </div>`;
+}
+
+function nxtBR() {
+  const rd=S.bR[S.bri];
+  if(S.bgi<rd.length-1){S.bgi++;S.br=0;S.ph='bRace';R();}
+  else {
+    const pool=[]; S.bRes.forEach(r=>r.filter(x=>x.adv).forEach(x=>pool.push(x.d)));
+    if(pool.length<=1){S.win=S.dr[pool[0]];S.ph='win';R();return;}
+    S.bRes=[]; setupBR(pool);
+  }
+}
+
+// ====== BRACKET TAB (tournament bracket with names like KotM) ======
+function vBracketTab() {
+  const tg = S.td / 4;
+  // Build bracket structure: groups -> bracket rounds -> final
+  // Round 0: group winners (slots)
+  // We need to figure out the full bracket tree
+  const totalAdv = tg * S.ac; // total advancers from groups
+  if (totalAdv <= 1) return `<div class="card fin"><div class="hdg">${ic('grid',24)} Bracket</div><p style="color:var(--ink3)">Only one driver advances. No bracket needed.</p></div>`;
+
+  // Build rounds from what we know
+  let rounds = [];
+  // Round 0: groups -> advancers
+  let r0slots = [];
+  for (let gi = 0; gi < tg; gi++) {
+    let names = [];
+    if (S.gRes[gi]) {
+      // Group completed
+      const advancers = S.gRes[gi].filter(r=>r.adv);
+      advancers.forEach(a => names.push(S.dr[a.d]));
+    } else {
+      // Not yet raced
+      for (let k = 0; k < S.ac; k++) names.push('');
+    }
+    r0slots.push(...names);
+  }
+  // Group into matches of 4
+  let roundMatches = [];
+  for (let i = 0; i < r0slots.length; i += 4) {
+    roundMatches.push(r0slots.slice(i, i+4));
+  }
+  rounds.push({ label: totalAdv <= 4 ? 'Final' : 'Round 1', matches: roundMatches });
+
+  // Now fill in bracket round results
+  let pool = [...r0slots];
+  for (let bri = 0; bri < S.abr.length; ) {
+    // Gather all results for this bracket round index
+    const ri = S.abr[bri].ri;
+    let roundRes = [];
+    while (bri < S.abr.length && S.abr[bri].ri === ri) {
+      roundRes.push(S.abr[bri]);
+      bri++;
+    }
+    // Tag winners in current round
+    if (rounds.length > 0) {
+      const lastRound = rounds[rounds.length - 1];
+      roundRes.forEach(rr => {
+        if (lastRound.matches[rr.gi]) {
+          lastRound.matches[rr.gi] = rr.res.map(r => ({
+            name: S.dr[r.d], adv: r.adv
+          }));
+        }
+      });
+    }
+    // Build next round from advancers
+    const advNames = [];
+    roundRes.forEach(rr => rr.res.filter(r=>r.adv).forEach(r => advNames.push(S.dr[r.d])));
+    if (advNames.length > 1) {
+      let nextMatches = [];
+      for (let i = 0; i < advNames.length; i += 4) {
+        nextMatches.push(advNames.slice(i, i+4));
+      }
+      const isFinal = advNames.length <= 4;
+      rounds.push({ label: isFinal ? 'Final' : `Round ${rounds.length + 1}`, matches: nextMatches });
+    }
+  }
+
+  // If we have a winner, tag it in the last round
+  if (S.win && rounds.length > 0) {
+    const lastRound = rounds[rounds.length - 1];
+    lastRound.matches.forEach((m, mi) => {
+      if (Array.isArray(m) && m.length > 0 && typeof m[0] === 'object') {
+        // Already tagged
+      }
+    });
+  }
+
+  return `<div class="card fin">
+    <div class="hdg">${ic('grid',24)} Tournament Bracket</div>
+    <div class="bwrap">
+      <div class="bracket-full">
+        ${rounds.map((rd, ri) => {
+          const isLast = ri === rounds.length - 1;
+          return `${ri > 0 ? '<div class="bk-connector"><div class="bk-conn-line"></div></div>' : ''}
+          <div class="bk-round">
+            <div class="bk-rlabel">${rd.label}</div>
+            ${rd.matches.map(m => {
+              // m could be array of strings (names) or array of objects with .name/.adv
+              let slots;
+              if (m.length > 0 && typeof m[0] === 'object') {
+                slots = m;
+              } else {
+                slots = m.map(name => ({ name, adv: null }));
+              }
+              return `<div class="bk-match">
+                ${slots.map(sl => {
+                  const cls = sl.adv === true ? 'bk-slot won' : sl.adv === false ? 'bk-slot lost' : (sl.name ? 'bk-slot' : 'bk-slot empty');
+                  return `<div class="${cls}"><span>${sl.name || 'TBD'}</span></div>`;
+                }).join('')}
+              </div>`;
+            }).join('')}
+          </div>`;
+        }).join('')}
+        ${S.win ? `<div class="bk-connector"><div class="bk-conn-line"></div></div>
+        <div class="bk-round">
+          <div class="bk-rlabel">Champion</div>
+          <div class="bk-match"><div class="bk-slot won" style="background:var(--gold-bg);color:var(--gold);font-weight:800"><span>${esc(S.win)}</span></div></div>
+        </div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ====== GROUPS TAB ======
+function vGroupsTab() {
+  const tg = S.td / 4;
+  let html = '';
+  for (let gi = 0; gi < tg; gi++) {
+    if (!S.gRes[gi]) {
+      // Group not yet raced
+      const hasNames = S.gr[gi];
+      if (hasNames) {
+        html += `<div class="card">
+          <div class="hdg">${ic('users',20)} Group ${gi+1} <span style="font-size:0.78rem;color:var(--ink3);font-weight:600;margin-left:auto">Not Yet Raced</span></div>
+          <div class="drv-grid">
+            ${S.gr[gi].map((d,i) => `<div class="drv-row" style="padding:6px 0">
+              <div class="drv-n ${DCLS[i]}" style="width:28px;height:28px;font-size:0.72rem">${i+1}</div>
+              <span style="font-weight:600">${esc(S.dr[d])}</span>
+            </div>`).join('')}
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="card">
+          <div class="hdg">${ic('users',20)} Group ${gi+1} <span style="font-size:0.78rem;color:var(--ink4);font-weight:600;margin-left:auto">Upcoming</span></div>
+          <p style="color:var(--ink4);font-size:0.92rem">Drivers not yet entered</p>
+        </div>`;
+      }
+    } else {
+      // Group completed - show results
+      const res = S.gRes[gi];
+      html += `<div class="card">
+        <div class="hdg">${ic('flag',20)} Group ${gi+1} <span style="font-size:0.78rem;color:var(--teal);font-weight:600;margin-left:auto">Complete</span></div>
+        <div class="rlist" style="margin-bottom:0">
+          ${res.map(r => `<div class="rrow ${r.adv?'adv':'out'}" style="padding:10px 16px">
+            <div class="rrank" style="font-size:0.92rem">${r.rk}</div>
+            <span class="rico" style="width:16px;height:16px">${r.adv?I.check:I.x}</span>
+            <div class="rname" style="font-size:0.95rem">${esc(S.dr[r.d])}</div>
+            <div class="rpts" style="font-size:0.85rem">${r.t} pts</div>
+            <div class="rbadge">${r.adv?'ADV':'OUT'}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }
+  }
+  if (!html) html = `<div class="card"><p style="color:var(--ink3)">No groups yet.</p></div>`;
+  return html;
+}
+
+// ====== WINNER ======
+function vWin() {
+  return `<div class="card wcard fin">
+    <div class="wico">${I.trophy}</div>
+    <div class="wname">${esc(S.win)}</div>
+    <div class="wsub">Slope Slammer Challenger</div>
+  </div>
+  <div class="tc mt16">
+    <button class="btn btn-ink" onclick="confirmReset()">${ic('redo')} New Tournament</button>
+  </div>`;
+}
+
+// ====== PROGRESS ======
+function vProg() {
+  const st=[],tg=S.td/4,inB=['bRace','bRes','bTiebreak','win'].includes(S.ph);
+  for(let i=0;i<tg;i++){
+    const done=inB||i<S.cg||(i===S.cg&&(S.ph==='gRes'||S.ph==='tiebreak'));
+    const on=!inB&&(i===S.cg||i===S.deg)&&(S.ph==='race'||S.ph==='enter'||S.ph==='tiebreak');
+    const clickable = S.gRes[i] && !(on); // can click completed groups
+    const viewing = S.viewGi === i;
+    st.push({l:`G${i+1}`,done,on,clickable,idx:i,viewing});
+  }
+  if(S.adv.length>4||S.bR.length) st.push({l:'BKT',done:S.ph==='win',on:inB&&S.ph!=='win',clickable:false,idx:-1,viewing:false});
+  st.push({l:'FIN',done:S.ph==='win',on:false,clickable:false,idx:-1,viewing:false});
+  return `<div class="prog">${st.map((s,i)=>{
+    const cls = `pdot ${s.done?'ok':''} ${s.on?'on':''} ${s.viewing?'viewing':''} ${s.clickable?'clickable':''}`;
+    const click = s.clickable ? `onclick="viewGroup(${s.idx})"` : '';
+    return `<span class="${cls}" ${click}>${s.l}</span>${i<st.length-1?'<span class="psep">&rsaquo;</span>':''}`;
+  }).join('')}</div>`;
+}
+
+// ====== VIEW PAST GROUP ======
+function viewGroup(gi) {
+  S.viewGi = gi;
+  S.editRace = -1;
+  S.tab = 'race';
+  R();
+}
+
+function vViewGroup(gi) {
+  const g = S.gr[gi];
+  const res = S.gRes[gi];
+  return `${vProg()}
+    <div class="card fin">
+      <div class="fxb mb12">
+        <div class="hdg" style="margin-bottom:0">${ic('flag',24)} Group ${gi+1} Scorecard</div>
+        <button class="btn btn-ghost btn-sm" onclick="S.viewGi=-1;S.editRace=-1;R()">${ic('arrR',14)} Back</button>
+      </div>
+      <table class="rtable"><thead><tr>
+        <th>Driver</th>${[0,1,2,3].map(x=>`<th>R${x+1} <button class="edit-btn" onclick="startEdit(${x},'view',${gi})" title="Edit R${x+1} scores">${I.pencil}</button></th>`).join('')}<th>Total</th>
+      </tr></thead><tbody>
+        ${g.map((d,di)=>{
+          const sc = S.sc[d];
+          const t = tot(sc);
+          return `<tr><td><div class="drv-cell"><div class="drv-dot" style="background:${DCOL[di]}"></div>${esc(S.dr[d])}</div></td>
+            ${[0,1,2,3].map(x=>{
+              if(S.editRace===x) {
+                return `<td><input class="sc-input" type="text" inputmode="numeric"
+                  data-did="${d}" data-race="${x}" data-di="${di}" data-pfx="view"
+                  value="${sc[x]===''||sc[x]===null?'':sc[x]}"
+                  oninput="editScIn(this,${d},${x})"
+                  onkeydown="editScKey(event,this)"
+                  placeholder="-" /></td>`;
+              }
+              return `<td><span class="spast">${sc[x]===''||sc[x]===null?'0':sc[x]}</span></td>`;
+            }).join('')}
+            <td class="tot">${t}</td></tr>`;
+        }).join('')}
+      </tbody></table>
+      ${S.editRace>=0?`<div class="tc mt12">
+        <button class="btn btn-teal btn-sm" onclick="saveEdit(${gi})">${ic('check',14)} Save Changes</button>
+        <button class="btn btn-ghost btn-sm" style="margin-left:8px" onclick="cancelEdit()">${ic('x',14)} Cancel</button>
+      </div>`:''}
+      <div class="rlist mt16">
+        ${res.map(r=>`<div class="rrow ${r.adv?'adv':'out'}">
+          <div class="rrank">${r.rk}</div>
+          <span class="rico">${r.adv?I.check:I.x}</span>
+          <div class="rname">${esc(S.dr[r.d])}</div>
+          <div class="rpts">${r.t} pts</div>
+          <div class="rbadge">${r.adv?'ADV':'OUT'}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ====== EDIT SCORES ======
+function startEdit(raceIdx, pfx, gi) {
+  S.editRace = raceIdx;
+  R();
+  setTimeout(()=>{
+    const inp = document.querySelector('.sc-input');
+    if(inp) inp.focus();
+  }, 60);
+}
+
+function cancelEdit() {
+  S.editRace = -1;
+  R();
+}
+
+function editScIn(el, d, r) {
+  const v = el.value.replace(/[^0-9]/g,'');
+  el.value = v;
+  S.sc[d][r] = v === '' ? '' : parseInt(v);
+  // Update tot cells live
+  const grpIdx = S.viewGi >= 0 ? S.viewGi : S.cg;
+  const g = S.gr[grpIdx];
+  g.forEach((dd,idx)=>{
+    const rows = document.querySelectorAll('.rtable tbody tr');
+    if(rows[idx]) {
+      const totCell = rows[idx].querySelector('.tot');
+      if(totCell) totCell.textContent = tot(S.sc[dd]);
+    }
+  });
+}
+
+function editScKey(e, el) {
+  const inputs = Array.from(document.querySelectorAll('.sc-input'));
+  const idx = inputs.indexOf(el);
+  if (e.key === 'Enter' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx < inputs.length - 1) {
+      inputs[idx+1].focus();
+      inputs[idx+1].select();
+    }
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) {
+      inputs[idx-1].focus();
+      inputs[idx-1].select();
+    }
+  }
+}
+
+function saveEdit(gi) {
+  const g = S.gr[gi];
+  // Recalculate results for this group
+  const res = g.map(d=>({d,t:tot(S.sc[d])}));
+  res.sort((a,b)=>b.t-a.t);
+  res.forEach((r,i)=>{r.adv=i<S.ac;r.rk=i+1;});
+  S.gRes[gi] = res;
+  // Rebuild advancers list from all completed groups
+  S.adv = [];
+  for(let i=0;i<S.gRes.length;i++){
+    S.gRes[i].filter(r=>r.adv).forEach(r=>S.adv.push(r.d));
+  }
+  S.editRace = -1;
+  R();
+}
+
+R();
+</script>
+</body>
+</html>

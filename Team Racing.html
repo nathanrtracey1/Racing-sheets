@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Racing Scoresheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0E8;
+  --surface: #FFFCF5;
+  --ink: #1A1A1A;
+  --ink-light: #6B6560;
+  --accent: #D4380D;
+  --accent-glow: #FF6B3D;
+  --team1: #2D5FA0;
+  --team1-light: #E8F0FA;
+  --team2: #B8420E;
+  --team2-light: #FCEEE8;
+  --team3: #1B7A4A;
+  --team3-light: #E6F5ED;
+  --team4: #7B3FA0;
+  --team4-light: #F3EAF9;
+  --gold: #D4A017;
+  --silver: #8A8A8A;
+  --border: #D6CEBF;
+  --radius: 10px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 64px;
+}
+
+.header {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 28px 32px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.02) 8px, rgba(255,255,255,0.02) 16px);
+}
+.header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 6px;
+  position: relative;
+}
+.header h1 span { color: var(--accent-glow); }
+.header .subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #999;
+  margin-top: 4px;
+  position: relative;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+/* SETUP */
+.setup-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.setup-section h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.setup-section h2 .step-num {
+  background: var(--ink);
+  color: var(--bg);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+}
+.teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.team-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.team-card[data-team="1"] { border-color: var(--team1); background: var(--team1-light); }
+.team-card[data-team="2"] { border-color: var(--team2); background: var(--team2-light); }
+.team-card[data-team="3"] { border-color: var(--team3); background: var(--team3-light); }
+.team-card[data-team="4"] { border-color: var(--team4); background: var(--team4-light); }
+.team-card label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--ink-light);
+  display: block; margin-bottom: 4px;
+}
+.team-card input {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 600;
+  border: none; background: transparent;
+  width: 100%; padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+  outline: none; color: var(--ink);
+}
+.team-card input:focus { border-bottom-color: var(--ink); }
+.team-card .drivers { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.team-card .drivers input { font-size: 14px; font-weight: 400; }
+
+.scoring-key {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 16px; padding: 12px 16px;
+  background: var(--ink); border-radius: var(--radius); color: var(--bg);
+}
+.scoring-key .key-item {
+  font-family: 'Space Mono', monospace; font-size: 12px;
+  display: flex; align-items: center; gap: 5px;
+}
+.scoring-key .key-item .pos { font-weight: 700; color: var(--accent-glow); }
+
+.start-btn {
+  display: block; width: 100%; margin-top: 20px; padding: 14px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px;
+  background: var(--accent); color: white; border: none;
+  border-radius: var(--radius); cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.start-btn:hover { background: var(--accent-glow); }
+.start-btn:active { transform: scale(0.98); }
+
+/* TABS */
+.round-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.round-tab {
+  font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 1px;
+  padding: 8px 16px; border: 2px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); cursor: pointer; transition: all 0.2s;
+}
+.round-tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.round-tab.final { border-color: var(--gold); }
+.round-tab.final.active { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+
+.round-panel { display: none; }
+.round-panel.active { display: block; }
+
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.reset-btn {
+  font-family: 'Space Mono', monospace; font-size: 11px; padding: 6px 14px;
+  background: transparent; border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer; color: var(--ink-light); transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* MATCH TABLE — spreadsheet style */
+.match-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.match-block-header {
+  padding: 10px 16px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 3px;
+  background: var(--ink); color: var(--bg);
+}
+
+.match-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.match-table th {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--ink-light);
+  padding: 8px 10px; text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.02);
+}
+.match-table th:first-child { text-align: left; width: 28%; }
+.match-table th.total-col { background: rgba(0,0,0,0.05); font-weight: 700; }
+.match-table th.team-total-col { background: rgba(0,0,0,0.05); font-weight: 700; width: 100px; }
+
+.match-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  text-align: center;
+}
+.match-table td:first-child { text-align: left; }
+
+.match-table .driver-name-cell {
+  font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.team-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+.team-dot[data-team="1"] { background: var(--team1); }
+.team-dot[data-team="2"] { background: var(--team2); }
+.team-dot[data-team="3"] { background: var(--team3); }
+.team-dot[data-team="4"] { background: var(--team4); }
+
+.score-input {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; font-weight: 600;
+  width: 44px; padding: 4px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  text-align: center;
+  background: white; color: var(--ink);
+  outline: none;
+  -moz-appearance: textfield;
+}
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.score-input:focus { border-color: var(--ink); }
+.score-input.has-value { border-color: var(--accent); background: #FFF5F0; }
+
+.total-cell {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700; font-size: 15px;
+}
+.team-total-cell {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700; font-size: 16px;
+  color: var(--accent);
+}
+.team-total-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--ink-light);
+}
+
+/* Team separator row */
+.match-table tr.team-separator td {
+  border-bottom: 3px solid var(--border);
+  padding: 0; height: 0;
+}
+
+/* Alternating team bg */
+.match-table tr[data-team-bg="1"] { background: var(--team1-light); }
+.match-table tr[data-team-bg="2"] { background: var(--team2-light); }
+.match-table tr[data-team-bg="3"] { background: var(--team3-light); }
+.match-table tr[data-team-bg="4"] { background: var(--team4-light); }
+
+/* ROUND SUMMARY */
+.round-summary {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px; margin-top: 4px;
+  box-shadow: var(--shadow);
+}
+.round-summary h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 2px; margin-bottom: 12px;
+}
+.round-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.summary-team {
+  padding: 12px; border-radius: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.summary-team[data-team="1"] { background: var(--team1-light); border: 1px solid var(--team1); }
+.summary-team[data-team="2"] { background: var(--team2-light); border: 1px solid var(--team2); }
+.summary-team[data-team="3"] { background: var(--team3-light); border: 1px solid var(--team3); }
+.summary-team[data-team="4"] { background: var(--team4-light); border: 1px solid var(--team4); }
+.summary-team .team-label { font-weight: 600; font-size: 14px; }
+.summary-team .team-pts { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 20px; }
+
+/* STANDINGS */
+.standings-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.standings-table th {
+  font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--ink-light);
+  padding: 10px 14px; text-align: left;
+  border-bottom: 2px solid var(--border); background: rgba(0,0,0,0.03);
+}
+.standings-table th.num-col { text-align: center; }
+.standings-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.standings-table td.num-col { text-align: center; font-family: 'Space Mono', monospace; font-weight: 700; }
+.standings-table tr:last-child td { border-bottom: none; }
+.standings-table tr.qualified { background: rgba(212,160,23,0.08); }
+.rank-badge {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: white;
+}
+.rank-1 { background: var(--gold); }
+.rank-2 { background: var(--silver); }
+.rank-3 { background: #CD7F32; }
+.rank-4 { background: var(--ink-light); }
+
+.round-header {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 20px;
+  margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.round-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; }
+.round-header .matchup-info { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--ink-light); margin-top: 4px; }
+
+.finals-notice {
+  background: linear-gradient(135deg, #FFF8E1, #FFF3CD);
+  border: 2px solid var(--gold); border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 16px;
+  font-weight: 600; display: flex; align-items: center; gap: 10px;
+}
+
+/* WINNER BANNER */
+.winner-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.winner-banner {
+  background: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+  border: 3px solid var(--gold);
+  border-radius: 16px;
+  padding: 36px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  max-width: 460px;
+  width: 90%;
+  animation: scaleIn 0.4s ease;
+}
+.winner-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(212,160,23,0.04) 8px, rgba(212,160,23,0.04) 16px);
+}
+.winner-banner * { position: relative; }
+.winner-trophy { font-size: 48px; margin-bottom: 8px; }
+.winner-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold); margin-bottom: 4px;
+}
+.winner-team-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px; letter-spacing: 4px;
+  color: white;
+}
+.winner-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; color: #999;
+  margin-top: 2px;
+}
+.mvd-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.mvd-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px; letter-spacing: 3px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.mvd-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px; font-weight: 700;
+  color: white;
+}
+.mvd-pts {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; color: var(--gold);
+  margin-top: 2px;
+}
+
+.hidden { display: none !important; }
+
+@media (max-width: 700px) {
+  .teams-grid { grid-template-columns: 1fr; }
+  .round-summary-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 32px; }
+  .scoring-key { flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>TEAM RACING</h1>
+  <div class="subtitle">4-Team Round Robin Scoresheet</div>
+</div>
+
+<div class="container">
+  <!-- SETUP -->
+  <div id="setup-phase">
+    <div class="setup-section">
+      <h2><span class="step-num">1</span> ENTER TEAMS &amp; DRIVERS</h2>
+      <div class="teams-grid" id="teams-grid"></div>
+    </div>
+    <div class="setup-section">
+      <h2><span class="step-num">2</span> SCORING KEY</h2>
+      <div class="scoring-key">
+        <div class="key-item"><span class="pos">1ST</span> 5 pts</div>
+        <div class="key-item"><span class="pos">2ND</span> 3 pts</div>
+        <div class="key-item"><span class="pos">3RD</span> 2 pts</div>
+        <div class="key-item"><span class="pos">4TH</span> 1 pt</div>
+        <div class="key-item"><span class="pos">DNF</span> 0 pts</div>
+      </div>
+    </div>
+    <button class="start-btn" id="start-btn">START TOURNAMENT</button>
+  </div>
+
+  <!-- TOURNAMENT -->
+  <div id="tournament-phase" class="hidden">
+    <div class="top-bar">
+      <div class="round-tabs" id="round-tabs"></div>
+      <button class="reset-btn" id="reset-btn">RESET</button>
+    </div>
+    <div id="round-panels"></div>
+  </div>
+</div>
+
+<script>
+const POINTS_MAP = { 5: '1st', 3: '2nd', 2: '3rd', 1: '4th', 0: 'DNF' };
+
+// Round-robin matchups (0-indexed teams)
+const MATCHUPS = [
+  { round: 1, teamA: 1, teamB: 0 },  // Team 2 vs Team 1
+  { round: 1, teamA: 2, teamB: 3 },  // Team 3 vs Team 4
+  { round: 2, teamA: 3, teamB: 1 },  // Team 4 vs Team 2
+  { round: 2, teamA: 0, teamB: 2 },  // Team 1 vs Team 3
+  { round: 3, teamA: 3, teamB: 0 },  // Team 4 vs Team 1
+  { round: 3, teamA: 1, teamB: 2 },  // Team 2 vs Team 3
+];
+
+let teams = [];
+let scoreData = {}; // key: `r{round}_m{matchIdx}_d{driverIdx}_race{race}` -> points number
+
+function init() {
+  const grid = document.getElementById('teams-grid');
+  grid.innerHTML = '';
+  for (let t = 0; t < 4; t++) {
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.setAttribute('data-team', t + 1);
+    card.innerHTML = `
+      <label>Team ${t + 1} Name</label>
+      <input type="text" class="team-name-input" data-team="${t}" placeholder="Team ${t + 1}">
+      <div class="drivers">
+        <label>Driver 1</label>
+        <input type="text" class="driver-input" data-team="${t}" data-driver="0" placeholder="Driver name">
+        <label>Driver 2</label>
+        <input type="text" class="driver-input" data-team="${t}" data-driver="1" placeholder="Driver name">
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function getTeams() {
+  const t = [];
+  for (let i = 0; i < 4; i++) {
+    const nameInput = document.querySelector(`.team-name-input[data-team="${i}"]`);
+    const d1 = document.querySelector(`.driver-input[data-team="${i}"][data-driver="0"]`);
+    const d2 = document.querySelector(`.driver-input[data-team="${i}"][data-driver="1"]`);
+    t.push({
+      name: nameInput.value.trim() || `Team ${i + 1}`,
+      drivers: [
+        d1.value.trim() || `Driver ${i * 2 + 1}`,
+        d2.value.trim() || `Driver ${i * 2 + 2}`
+      ],
+      idx: i
+    });
+  }
+  return t;
+}
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  teams = getTeams();
+  scoreData = {};
+  document.getElementById('setup-phase').classList.add('hidden');
+  document.getElementById('tournament-phase').classList.remove('hidden');
+  buildTournament();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('Reset tournament and go back to team setup?')) return;
+  document.getElementById('setup-phase').classList.remove('hidden');
+  document.getElementById('tournament-phase').classList.add('hidden');
+  scoreData = {};
+});
+
+function buildTournament() {
+  buildTabs();
+  buildRoundPanels();
+  activateTab(0);
+}
+
+function buildTabs() {
+  const tabs = document.getElementById('round-tabs');
+  tabs.innerHTML = '';
+  ['ROUND 1', 'ROUND 2', 'ROUND 3', 'FINALS', 'STANDINGS'].forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'round-tab' + (i === 3 ? ' final' : '');
+    btn.textContent = label;
+    btn.addEventListener('click', () => activateTab(i));
+    tabs.appendChild(btn);
+  });
+}
+
+function activateTab(idx) {
+  document.querySelectorAll('.round-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.round-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  if (idx === 4) updateStandings();
+}
+
+function buildRoundPanels() {
+  const panels = document.getElementById('round-panels');
+  panels.innerHTML = '';
+
+  for (let round = 1; round <= 3; round++) {
+    const panel = document.createElement('div');
+    panel.className = 'round-panel';
+
+    const matchesInRound = MATCHUPS.filter(m => m.round === round);
+
+    matchesInRound.forEach((match, mi) => {
+      panel.appendChild(buildMatchTable(round, mi, match));
+    });
+
+    // Round summary
+    const summary = document.createElement('div');
+    summary.className = 'round-summary';
+    summary.id = `round-summary-${round}`;
+    summary.innerHTML = `<h4>ROUND ${round} TEAM TOTALS</h4><div class="round-summary-grid" id="round-summary-grid-${round}"></div>`;
+    panel.appendChild(summary);
+
+    panels.appendChild(panel);
+  }
+
+  // Finals panel
+  const finalsPanel = document.createElement('div');
+  finalsPanel.className = 'round-panel';
+  finalsPanel.innerHTML = `
+    <div class="finals-notice">
+      <span style="font-size:22px">&#127942;</span>
+      <span>FINALS — Top 2 teams from Rounds 1–3 compete head-to-head</span>
+    </div>
+    <div id="finals-matchup-label" class="round-header" style="margin-bottom:16px">
+      <h3>FINAL ROUND</h3>
+      <div class="matchup-info" id="finals-teams-label">Complete Rounds 1–3 to determine finalists</div>
+    </div>
+    <div id="finals-match-container"></div>
+    <div class="round-summary" id="finals-summary" style="margin-top:4px">
+      <h4>FINALS TEAM TOTALS</h4>
+      <div class="round-summary-grid" id="finals-summary-grid"></div>
+    </div>
+  `;
+  panels.appendChild(finalsPanel);
+
+  // Standings panel
+  const standingsPanel = document.createElement('div');
+  standingsPanel.className = 'round-panel';
+  standingsPanel.innerHTML = '<div id="standings-content"></div>';
+  panels.appendChild(standingsPanel);
+
+  // Initial summary render
+  for (let r = 1; r <= 3; r++) updateRoundSummary(r);
+}
+
+function buildMatchTable(round, matchIdx, match) {
+  const teamA = teams[match.teamA];
+  const teamB = teams[match.teamB];
+  const prefix = round === 'finals' ? 'finals' : `r${round}`;
+  const mKey = `${prefix}_m${matchIdx}`;
+
+  const block = document.createElement('div');
+  block.className = 'match-block';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'match-block-header';
+  header.textContent = `${teamA.name} vs ${teamB.name}`;
+  block.appendChild(header);
+
+  // Table
+  const table = document.createElement('table');
+  table.className = 'match-table';
+
+  // Thead
+  const thead = document.createElement('thead');
+  let headerRow = '<tr><th>Name</th>';
+  for (let r = 1; r <= 4; r++) headerRow += `<th>Race ${r}</th>`;
+  headerRow += '<th class="total-col">Total</th><th class="team-total-col">Team Total</th></tr>';
+  thead.innerHTML = headerRow;
+  table.appendChild(thead);
+
+  // Tbody
+  const tbody = document.createElement('tbody');
+  const allDrivers = [
+    { name: teamA.drivers[0], teamIdx: match.teamA, di: 0 },
+    { name: teamA.drivers[1], teamIdx: match.teamA, di: 1 },
+    { name: teamB.drivers[0], teamIdx: match.teamB, di: 0 },
+    { name: teamB.drivers[1], teamIdx: match.teamB, di: 1 },
+  ];
+
+  allDrivers.forEach((driver, rowIdx) => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-team-bg', driver.teamIdx + 1);
+
+    // Name cell
+    const nameTd = document.createElement('td');
+    nameTd.innerHTML = `<div class="driver-name-cell"><span class="team-dot" data-team="${driver.teamIdx + 1}"></span>${driver.name}</div>`;
+    tr.appendChild(nameTd);
+
+    // Race inputs (4 races)
+    for (let race = 1; race <= 4; race++) {
+      const td = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.max = '5';
+      input.className = 'score-input';
+      input.dataset.key = `${mKey}_d${rowIdx}_race${race}`;
+      input.dataset.round = round;
+      input.dataset.matchIdx = matchIdx;
+      input.dataset.driverRow = rowIdx;
+      input.dataset.race = race;
+      input.dataset.mkey = mKey;
+
+      // Restore saved value
+      const saved = scoreData[input.dataset.key];
+      if (saved !== undefined) {
+        input.value = saved;
+        if (saved !== '') input.classList.add('has-value');
+      }
+
+      // Keyboard navigation: Enter/ArrowDown moves down, ArrowUp moves up, ArrowLeft/Right moves between races
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const currentRow = e.target.dataset.driverRow;
+          const currentRace = parseInt(e.target.dataset.race);
+          const currentMKey = e.target.dataset.mkey;
+          const targetRace = currentRace + (e.key === 'ArrowLeft' ? -1 : 1);
+
+          if (targetRace >= 1 && targetRace <= 4) {
+            const targetKey = `${currentMKey}_d${currentRow}_race${targetRace}`;
+            const targetInput = document.querySelector(`.score-input[data-key="${targetKey}"]`);
+            if (targetInput) { targetInput.focus(); targetInput.select(); }
+          }
+          return;
+        }
+        if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const currentRow = parseInt(e.target.dataset.driverRow);
+          const currentRace = e.target.dataset.race;
+          const currentMKey = e.target.dataset.mkey;
+          const direction = e.key === 'ArrowUp' ? -1 : 1;
+          const targetRow = currentRow + direction;
+
+          if (targetRow >= 0 && targetRow <= 3) {
+            const targetKey = `${currentMKey}_d${targetRow}_race${currentRace}`;
+            const targetInput = document.querySelector(`.score-input[data-key="${targetKey}"]`);
+            if (targetInput) { targetInput.focus(); targetInput.select(); return; }
+          }
+
+          // Moving past the edge of the table: try adjacent match block
+          const matchBlock = e.target.closest('.match-block');
+          if (direction === 1) {
+            const nextBlock = matchBlock.nextElementSibling;
+            if (nextBlock && nextBlock.classList.contains('match-block')) {
+              const firstInput = nextBlock.querySelector(`.score-input[data-race="${currentRace}"][data-driver-row="0"]`);
+              if (firstInput) { firstInput.focus(); firstInput.select(); }
+            }
+          } else {
+            const prevBlock = matchBlock.previousElementSibling;
+            if (prevBlock && prevBlock.classList.contains('match-block')) {
+              const lastInput = prevBlock.querySelector(`.score-input[data-race="${currentRace}"][data-driver-row="3"]`);
+              if (lastInput) { lastInput.focus(); lastInput.select(); }
+            }
+          }
+        }
+      });
+
+      input.addEventListener('input', (e) => {
+        let val = e.target.value;
+        if (val !== '' && (parseInt(val) < 0 || parseInt(val) > 5)) {
+          val = Math.max(0, Math.min(5, parseInt(val) || 0)).toString();
+          e.target.value = val;
+        }
+        scoreData[e.target.dataset.key] = val;
+        e.target.classList.toggle('has-value', val !== '');
+        recalcMatch(mKey, allDrivers, match);
+        if (round !== 'finals') {
+          updateRoundSummary(round);
+        }
+        updateFinalsInfo();
+        updateStandings();
+      });
+
+      td.appendChild(input);
+      tr.appendChild(td);
+    }
+
+    // Individual total
+    const totalTd = document.createElement('td');
+    totalTd.className = 'total-cell';
+    totalTd.id = `total-${mKey}_d${rowIdx}`;
+    totalTd.textContent = '0';
+    tr.appendChild(totalTd);
+
+    // Team total (only on first driver of each team, rowspan=2)
+    if (rowIdx === 0 || rowIdx === 2) {
+      const teamTotalTd = document.createElement('td');
+      teamTotalTd.rowSpan = 2;
+      teamTotalTd.style.verticalAlign = 'middle';
+      teamTotalTd.innerHTML = `
+        <div class="team-total-label">${rowIdx === 0 ? teamA.name : teamB.name}</div>
+        <div class="team-total-cell" id="team-total-${mKey}_team${rowIdx === 0 ? 0 : 1}">0</div>
+      `;
+      tr.appendChild(teamTotalTd);
+    }
+
+    tbody.appendChild(tr);
+
+    // Add separator between teams
+    if (rowIdx === 1) {
+      const sep = document.createElement('tr');
+      sep.className = 'team-separator';
+      sep.innerHTML = '<td colspan="7"></td>';
+      tbody.appendChild(sep);
+    }
+  });
+
+  table.appendChild(tbody);
+  block.appendChild(table);
+  return block;
+}
+
+function recalcMatch(mKey, allDrivers, match) {
+  let teamATot = 0, teamBTot = 0;
+
+  allDrivers.forEach((driver, rowIdx) => {
+    let driverTotal = 0;
+    for (let race = 1; race <= 4; race++) {
+      const key = `${mKey}_d${rowIdx}_race${race}`;
+      const val = scoreData[key];
+      if (val !== undefined && val !== '') driverTotal += parseInt(val) || 0;
+    }
+    const totalEl = document.getElementById(`total-${mKey}_d${rowIdx}`);
+    if (totalEl) totalEl.textContent = driverTotal;
+
+    if (driver.teamIdx === match.teamA) teamATot += driverTotal;
+    else teamBTot += driverTotal;
+  });
+
+  const teamAEl = document.getElementById(`team-total-${mKey}_team0`);
+  const teamBEl = document.getElementById(`team-total-${mKey}_team1`);
+  if (teamAEl) teamAEl.textContent = teamATot;
+  if (teamBEl) teamBEl.textContent = teamBTot;
+}
+
+function getTeamRoundPoints(teamIdx, round) {
+  const matchesInRound = MATCHUPS.filter(m => m.round === round);
+  let total = 0;
+  matchesInRound.forEach((match, mi) => {
+    const mKey = `r${round}_m${mi}`;
+    const allDrivers = [
+      { teamIdx: match.teamA, di: 0 },
+      { teamIdx: match.teamA, di: 1 },
+      { teamIdx: match.teamB, di: 0 },
+      { teamIdx: match.teamB, di: 1 },
+    ];
+    allDrivers.forEach((d, rowIdx) => {
+      if (d.teamIdx === teamIdx) {
+        for (let race = 1; race <= 4; race++) {
+          const key = `${mKey}_d${rowIdx}_race${race}`;
+          const val = scoreData[key];
+          if (val !== undefined && val !== '') total += parseInt(val) || 0;
+        }
+      }
+    });
+  });
+  return total;
+}
+
+function updateRoundSummary(round) {
+  const grid = document.getElementById(`round-summary-grid-${round}`);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const matchesInRound = MATCHUPS.filter(m => m.round === round);
+  const teamIdxs = new Set();
+  matchesInRound.forEach(m => { teamIdxs.add(m.teamA); teamIdxs.add(m.teamB); });
+
+  teamIdxs.forEach(ti => {
+    const pts = getTeamRoundPoints(ti, round);
+    const el = document.createElement('div');
+    el.className = 'summary-team';
+    el.setAttribute('data-team', ti + 1);
+    el.innerHTML = `<span class="team-label">${teams[ti].name}</span><span class="team-pts">${pts}</span>`;
+    grid.appendChild(el);
+  });
+}
+
+function getTeamTotalPoints(teamIdx) {
+  let t = 0;
+  for (let r = 1; r <= 3; r++) t += getTeamRoundPoints(teamIdx, r);
+  return t;
+}
+
+function getTop2Teams() {
+  return teams.map((t, i) => ({ ...t, idx: i, total: getTeamTotalPoints(i) }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 2);
+}
+
+function updateFinalsInfo() {
+  const top2 = getTop2Teams();
+  const label = document.getElementById('finals-teams-label');
+  const container = document.getElementById('finals-match-container');
+
+  if (top2[0].total > 0) {
+    label.textContent = `${top2[0].name} (${top2[0].total} pts) vs ${top2[1].name} (${top2[1].total} pts)`;
+
+    // Rebuild finals match if teams changed
+    const newKey = `${top2[0].idx}-${top2[1].idx}`;
+    if (container.dataset.teams !== newKey) {
+      container.dataset.teams = newKey;
+      container.innerHTML = '';
+      const finalsMatch = { teamA: top2[0].idx, teamB: top2[1].idx };
+      container.appendChild(buildMatchTable('finals', 0, finalsMatch));
+    }
+  } else {
+    label.textContent = 'Complete Rounds 1–3 to determine finalists';
+  }
+
+  // Update finals summary
+  const grid = document.getElementById('finals-summary-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (top2[0].total > 0) {
+    top2.forEach(t => {
+      const pts = getFinalsTeamPoints(t.idx);
+      const el = document.createElement('div');
+      el.className = 'summary-team';
+      el.setAttribute('data-team', t.idx + 1);
+      el.innerHTML = `<span class="team-label">${t.name}</span><span class="team-pts">${pts}</span>`;
+      grid.appendChild(el);
+    });
+  }
+
+  // Winner banner
+  updateWinnerBanner(top2);
+}
+
+function updateWinnerBanner(top2) {
+  // Remove existing overlay if any
+  const existing = document.getElementById('winner-overlay');
+  if (existing) existing.remove();
+
+  // Check if finals have scores
+  let finalsHaveScores = false;
+  let allFinalsRacesFilled = true;
+  for (let race = 1; race <= 4; race++) {
+    for (let d = 0; d < 4; d++) {
+      const key = `finals_m0_d${d}_race${race}`;
+      const val = scoreData[key];
+      if (val !== undefined && val !== '') {
+        finalsHaveScores = true;
+      } else {
+        allFinalsRacesFilled = false;
+      }
+    }
+  }
+
+  if (!finalsHaveScores || !allFinalsRacesFilled) return;
+
+  // Determine winning team by overall points
+  const finalsScores = top2.map(t => ({
+    ...t,
+    finalsPts: getFinalsTeamPoints(t.idx),
+    grandTotal: t.total + getFinalsTeamPoints(t.idx)
+  }));
+  finalsScores.sort((a, b) => b.grandTotal - a.grandTotal);
+  const winner = finalsScores[0];
+
+  // Find MVD: driver from winning team with the most overall points
+  let mvd = null;
+  let mvdPts = -1;
+  teams[winner.idx].drivers.forEach((dName, di) => {
+    const pts = getDriverPoints(winner.idx, di);
+    if (pts > mvdPts) {
+      mvdPts = pts;
+      mvd = { name: dName, pts };
+    }
+  });
+
+  const overlay = document.createElement('div');
+  overlay.id = 'winner-overlay';
+  overlay.className = 'winner-overlay';
+  overlay.innerHTML = `
+    <div class="winner-banner">
+      <button onclick="document.getElementById('winner-overlay').remove()" style="
+        position:absolute; top:12px; right:16px; background:none; border:none;
+        color:#999; font-size:24px; cursor:pointer; z-index:1;
+        font-family:'Space Mono',monospace; line-height:1;
+      ">&times;</button>
+      <div class="winner-trophy">&#127942;</div>
+      <div class="winner-label">TOURNAMENT CHAMPION</div>
+      <div class="winner-team-name">${winner.name}</div>
+      <div class="winner-score">Grand Total: ${winner.grandTotal} pts</div>
+      ${mvd ? `
+        <div class="mvd-section">
+          <div class="mvd-badge">MVD</div>
+          <div class="mvd-name">${mvd.name}</div>
+          <div class="mvd-pts">${mvd.pts} total points</div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  // Click outside to close
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+  document.body.appendChild(overlay);
+}
+
+function getFinalsTeamPoints(teamIdx) {
+  const mKey = 'finals_m0';
+  const top2 = getTop2Teams();
+  const allDrivers = [
+    { teamIdx: top2[0].idx },
+    { teamIdx: top2[0].idx },
+    { teamIdx: top2[1].idx },
+    { teamIdx: top2[1].idx },
+  ];
+  let total = 0;
+  allDrivers.forEach((d, rowIdx) => {
+    if (d.teamIdx === teamIdx) {
+      for (let race = 1; race <= 4; race++) {
+        const key = `${mKey}_d${rowIdx}_race${race}`;
+        const val = scoreData[key];
+        if (val !== undefined && val !== '') total += parseInt(val) || 0;
+      }
+    }
+  });
+  return total;
+}
+
+function getDriverPoints(teamIdx, driverIdx) {
+  let pts = 0;
+  for (let round = 1; round <= 3; round++) {
+    const matchesInRound = MATCHUPS.filter(m => m.round === round);
+    matchesInRound.forEach((match, mi) => {
+      const mKey = `r${round}_m${mi}`;
+      const allDrivers = [
+        { teamIdx: match.teamA, di: 0 },
+        { teamIdx: match.teamA, di: 1 },
+        { teamIdx: match.teamB, di: 0 },
+        { teamIdx: match.teamB, di: 1 },
+      ];
+      allDrivers.forEach((d, rowIdx) => {
+        if (d.teamIdx === teamIdx && d.di === driverIdx) {
+          for (let race = 1; race <= 4; race++) {
+            const key = `${mKey}_d${rowIdx}_race${race}`;
+            const val = scoreData[key];
+            if (val !== undefined && val !== '') pts += parseInt(val) || 0;
+          }
+        }
+      });
+    });
+  }
+  // Finals
+  const top2 = getTop2Teams();
+  if (top2[0].idx === teamIdx || top2[1].idx === teamIdx) {
+    const mKey = 'finals_m0';
+    const finalsDrivers = [
+      { teamIdx: top2[0].idx, di: 0 },
+      { teamIdx: top2[0].idx, di: 1 },
+      { teamIdx: top2[1].idx, di: 0 },
+      { teamIdx: top2[1].idx, di: 1 },
+    ];
+    finalsDrivers.forEach((d, rowIdx) => {
+      if (d.teamIdx === teamIdx && d.di === driverIdx) {
+        for (let race = 1; race <= 4; race++) {
+          const key = `${mKey}_d${rowIdx}_race${race}`;
+          const val = scoreData[key];
+          if (val !== undefined && val !== '') pts += parseInt(val) || 0;
+        }
+      }
+    });
+  }
+  return pts;
+}
+
+function updateStandings() {
+  const content = document.getElementById('standings-content');
+  if (!content) return;
+
+  const top2 = getTop2Teams();
+
+  const teamStandings = teams.map((t, i) => {
+    let roundPts = getTeamTotalPoints(i);
+    let finalsPts = (top2[0].idx === i || top2[1].idx === i) ? getFinalsTeamPoints(i) : 0;
+    return { ...t, idx: i, roundPts, finalsPts, total: roundPts + finalsPts };
+  }).sort((a, b) => b.total - a.total);
+
+  const individualStandings = [];
+  teams.forEach((t, ti) => {
+    t.drivers.forEach((dName, di) => {
+      individualStandings.push({ name: dName, teamIdx: ti, teamName: t.name, pts: getDriverPoints(ti, di) });
+    });
+  });
+  individualStandings.sort((a, b) => b.pts - a.pts);
+
+  content.innerHTML = `
+    <div class="round-header" style="margin-bottom:16px">
+      <h3>TEAM STANDINGS</h3>
+      <div class="matchup-info">Combined points from all rounds</div>
+    </div>
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th style="width:40px" class="num-col">#</th>
+          <th>Team</th>
+          <th class="num-col">R1</th>
+          <th class="num-col">R2</th>
+          <th class="num-col">R3</th>
+          <th class="num-col">Finals</th>
+          <th class="num-col">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${teamStandings.map((t, i) => `
+          <tr class="${i < 2 ? 'qualified' : ''}">
+            <td class="num-col"><span class="rank-badge rank-${i+1}">${i+1}</span></td>
+            <td><div class="driver-name-cell"><span class="team-dot" data-team="${t.idx+1}"></span>${t.name}</div></td>
+            <td class="num-col">${getTeamRoundPoints(t.idx, 1)}</td>
+            <td class="num-col">${getTeamRoundPoints(t.idx, 2)}</td>
+            <td class="num-col">${getTeamRoundPoints(t.idx, 3)}</td>
+            <td class="num-col">${t.finalsPts || '—'}</td>
+            <td class="num-col" style="font-size:16px;color:var(--accent)">${t.total}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:24px">
+      <div class="round-header" style="margin-bottom:16px">
+        <h3>INDIVIDUAL STANDINGS</h3>
+        <div class="matchup-info">All drivers ranked by total points</div>
+      </div>
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th style="width:40px" class="num-col">#</th>
+            <th>Driver</th>
+            <th>Team</th>
+            <th class="num-col">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${individualStandings.map((d, i) => `
+            <tr>
+              <td class="num-col"><span class="rank-badge rank-${Math.min(i+1,4)}">${i+1}</span></td>
+              <td><div class="driver-name-cell"><span class="team-dot" data-team="${d.teamIdx+1}"></span>${d.name}</div></td>
+              <td style="font-size:12px;color:var(--ink-light)">${d.teamName}</td>
+              <td class="num-col" style="font-size:16px;color:var(--accent)">${d.pts}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>
