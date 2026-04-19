@@ -8,19 +8,22 @@ cd "$(dirname "$0")"
 # ── Find Python 3.10+ ─────────────────────────────────────────────────────────
 PYTHON=""
 for candidate in \
+    /Library/Frameworks/Python.framework/Versions/3.14/bin/python3.14 \
     /Library/Frameworks/Python.framework/Versions/3.13/bin/python3.13 \
     /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 \
     /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
     /Library/Frameworks/Python.framework/Versions/3.10/bin/python3.10 \
+    /opt/homebrew/bin/python3.14 \
     /opt/homebrew/bin/python3.13 \
     /opt/homebrew/bin/python3.12 \
     /opt/homebrew/bin/python3.11 \
     /opt/homebrew/bin/python3 \
+    /usr/local/bin/python3.14 \
     /usr/local/bin/python3.13 \
     /usr/local/bin/python3.12 \
     /usr/local/bin/python3.11 \
     /usr/local/bin/python3 \
-    python3.13 python3.12 python3.11 python3.10; do
+    python3.14 python3.13 python3.12 python3.11 python3.10; do
     if command -v "$candidate" &>/dev/null || [ -x "$candidate" ]; then
         MINOR=$("$candidate" -c "import sys; print(sys.version_info.minor)" 2>/dev/null)
         MAJOR=$("$candidate" -c "import sys; print(sys.version_info.major)" 2>/dev/null)
