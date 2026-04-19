@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Racing Scoreboard</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:#f5f0e8;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:48px 24px;
+}
+.header{text-align:center;margin-bottom:52px}
+.header h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(52px,9vw,108px);
+  color:#1a1a1a;
+  letter-spacing:5px;
+  line-height:1;
+}
+.flag{display:inline-block;margin-right:8px;font-size:.85em;vertical-align:middle}
+.header p{color:#888;font-size:15px;margin-top:10px;letter-spacing:.5px;font-weight:500}
+.cards{
+  display:flex;
+  gap:22px;
+  flex-wrap:wrap;
+  justify-content:center;
+  max-width:1020px;
+  width:100%;
+}
+.card{
+  flex:1;
+  min-width:240px;
+  max-width:300px;
+  background:#fff;
+  border:2px solid #1a1a1a;
+  border-radius:18px;
+  padding:34px 26px 28px;
+  text-align:center;
+  cursor:pointer;
+  text-decoration:none;
+  color:inherit;
+  transition:transform .18s,box-shadow .18s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  box-shadow:4px 4px 0 #1a1a1a;
+  border-top-width:6px;
+}
+.card:hover{transform:translate(-3px,-3px);box-shadow:7px 7px 0 #1a1a1a}
+.card:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #1a1a1a}
+.card-drc{border-top-color:#c0392b}
+.card-team{border-top-color:#2563eb}
+.card-tour{border-top-color:#d4a017}
+.card-icon{font-size:58px;line-height:1;margin-bottom:2px}
+.card-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:29px;
+  letter-spacing:2.5px;
+  color:#1a1a1a;
+  line-height:1.1;
+}
+.card-sub{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:#aaa;
+}
+.card-desc{font-size:13.5px;color:#555;line-height:1.65;font-weight:400}
+.card-tag{
+  background:#f5f0e8;
+  border:1.5px solid #ddd;
+  border-radius:20px;
+  padding:4px 13px;
+  font-size:11.5px;
+  font-weight:700;
+  color:#555;
+  letter-spacing:.5px;
+  margin-top:2px;
+}
+
+/* ===== AUDIO PANEL ===== */
+#_ov_audio{
+  position:fixed;bottom:20px;right:0;z-index:99999;
+  display:flex;align-items:center;padding:10px;
+  background:rgba(18,18,18,.9);
+  border-radius:16px 0 0 16px;
+  gap:10px;
+  box-shadow:-3px 3px 20px rgba(0,0,0,.35);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.1);border-right:none;
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+#_ov_audio._coll{transform:translateX(calc(100% - 52px))}
+#_ov_atog{
+  width:42px;height:42px;min-width:42px;
+  border-radius:50%;background:transparent;color:#fff;
+  border:2px solid rgba(255,255,255,.25);cursor:pointer;
+  font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s;font-family:sans-serif;
+}
+#_ov_atog:hover{border-color:rgba(255,255,255,.65)}
+._ov_ab{
+  width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  transition:transform .15s,box-shadow .15s;
+  font-size:26px;line-height:1;
+}
+._ov_ab:hover{transform:scale(1.12);box-shadow:0 4px 16px rgba(0,0,0,.45)}
+._ov_ab:active{transform:scale(.95)}
+#_ov_fat{
+  background:#dc2626;color:#fff;
+  font-weight:900;font-size:22px;
+  font-family:'Arial Black','Arial Bold',Arial,sans-serif;letter-spacing:-1px;
+}
+#_ov_cln{background:#1d4ed8;color:#fff}
+#_ov_drt{background:#7c4a1a;color:#fff;font-size:24px;position:relative}
+#_ov_drt::after{
+  content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(ellipse at 65% 35%,rgba(0,0,0,.28) 0%,transparent 65%);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="flag">🏁</span>Racing Scoreboard</h1>
+  <p>Select a format to begin</p>
+</div>
+
+<div class="cards">
+  <a class="card card-drc" href="DRC.html">
+    <div class="card-icon">🏆</div>
+    <div class="card-title">Diecast Rally<br>Championship</div>
+    <div class="card-sub">Elimination Format</div>
+    <div class="card-desc">8 or 16 drivers with progressive elimination each round. Last two face off for the championship.</div>
+    <div class="card-tag">DRC · 8–16 Drivers</div>
+  </a>
+
+  <a class="card card-team" href="Team Racing.html">
+    <div class="card-icon">🤝</div>
+    <div class="card-title">Team<br>Racing</div>
+    <div class="card-sub">Round Robin Format</div>
+    <div class="card-desc">4 teams of 2 drivers battle through round-robin matches. Top 2 teams advance to the finals.</div>
+    <div class="card-tag">Team · 4 Teams × 2 Drivers</div>
+  </a>
+
+  <a class="card card-tour" href="Tournament Racing.html">
+    <div class="card-icon">🏁</div>
+    <div class="card-title">Tournament<br>Racing</div>
+    <div class="card-sub">Bracket Format</div>
+    <div class="card-desc">Group stage racing followed by bracket elimination. Supports 4 to 64 drivers.</div>
+    <div class="card-tag">Tournament · 4–64 Drivers</div>
+  </a>
+</div>
+
+<!-- AUDIO PANEL (no home button — this IS the home page) -->
+<div id="_ov_audio">
+  <button id="_ov_atog" onclick="_ovTog()" title="Toggle sounds">◀</button>
+  <button class="_ov_ab" id="_ov_fat" onclick="_ovPlay('Fatality.mp3')" title="Fatality">F</button>
+  <button class="_ov_ab" id="_ov_cln" onclick="_ovPlay('Clean%20Sweep.mp3')" title="Clean Sweep">🧹</button>
+  <button class="_ov_ab" id="_ov_drt" onclick="_ovPlay('Dirty%20Sweep.mp3')" title="Dirty Sweep">🚗</button>
+</div>
+
+<script>
+(function(){
+  var _a=null;
+  window._ovTog=function(){
+    var p=document.getElementById('_ov_audio'),t=document.getElementById('_ov_atog');
+    p.classList.toggle('_coll');
+    t.textContent=p.classList.contains('_coll')?'▶':'◀';
+  };
+  window._ovPlay=function(f){
+    if(_a){_a.pause();_a.currentTime=0;}
+    _a=new Audio(f);
+    _a.play().catch(function(){});
+  };
+})();
+</script>
+
+</body>
+</html>

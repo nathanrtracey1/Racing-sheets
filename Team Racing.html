@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Team Racing Scoresheet</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 :root {
   --bg: #F5F0E8;
@@ -424,6 +424,39 @@ body {
 </style>
 </head>
 <body>
+<!-- ===== SCOREBOARD OVERLAY: HOME + AUDIO ===== -->
+<style>
+#_ov_home{position:fixed;top:14px;left:14px;z-index:99999;width:42px;height:42px;border-radius:50%;background:rgba(18,18,18,.88);color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background .2s,transform .15s;border:2px solid rgba(255,255,255,.15)}
+#_ov_home:hover{background:rgba(45,45,45,.96);transform:scale(1.08)}
+#_ov_audio{position:fixed;bottom:20px;right:0;z-index:99999;display:flex;align-items:center;padding:10px;background:rgba(18,18,18,.9);border-radius:16px 0 0 16px;gap:10px;box-shadow:-3px 3px 20px rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-right:none;transition:transform .35s cubic-bezier(.4,0,.2,1)}
+#_ov_audio._coll{transform:translateX(calc(100% - 52px))}
+#_ov_atog{width:42px;height:42px;min-width:42px;border-radius:50%;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.25);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:border-color .2s;font-family:sans-serif}
+#_ov_atog:hover{border-color:rgba(255,255,255,.65)}
+._ov_ab{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;font-size:26px;line-height:1}
+._ov_ab:hover{transform:scale(1.12);box-shadow:0 4px 16px rgba(0,0,0,.45)}
+._ov_ab:active{transform:scale(.95)}
+#_ov_fat{background:#dc2626;color:#fff;font-weight:900;font-size:22px;font-family:'Arial Black','Arial Bold',Arial,sans-serif;letter-spacing:-1px}
+#_ov_cln{background:#1d4ed8;color:#fff}
+#_ov_drt{background:#7c4a1a;color:#fff;font-size:24px;position:relative}
+#_ov_drt::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(ellipse at 65% 35%,rgba(0,0,0,.28) 0%,transparent 65%)}
+</style>
+<a id="_ov_home" href="launcher.html" title="Home">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+</a>
+<div id="_ov_audio">
+<button id="_ov_atog" onclick="_ovTog()" title="Toggle sounds">◀</button>
+<button class="_ov_ab" id="_ov_fat" onclick="_ovPlay('Fatality.mp3')" title="Fatality">F</button>
+<button class="_ov_ab" id="_ov_cln" onclick="_ovPlay('Clean%20Sweep.mp3')" title="Clean Sweep">🧹</button>
+<button class="_ov_ab" id="_ov_drt" onclick="_ovPlay('Dirty%20Sweep.mp3')" title="Dirty Sweep">🚗</button>
+</div>
+<script>
+(function(){
+var _a=null;
+window._ovTog=function(){var p=document.getElementById('_ov_audio'),t=document.getElementById('_ov_atog');p.classList.toggle('_coll');t.textContent=p.classList.contains('_coll')?'▶':'◀';};
+window._ovPlay=function(f){if(_a){_a.pause();_a.currentTime=0;}_a=new Audio(f);_a.play().catch(function(){});};
+})();
+</script>
+<!-- ===== OVERLAY END ===== -->
 
 <div class="header">
   <h1>TEAM RACING</h1>
