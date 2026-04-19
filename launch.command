@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 # Racing Scoreboard — double-click to launch
-# This opens the scoreboard in your default browser.
-# Close this Terminal window to stop the server.
+# Requires Python 3. Close this window to quit.
 
 cd "$(dirname "$0")"
 
-PORT=8765
-while lsof -Pi :"$PORT" -sTCP:LISTEN -t >/dev/null 2>&1; do
-  PORT=$((PORT + 1))
-done
+if ! command -v python3 &>/dev/null; then
+    echo "ERROR: Python 3 not found. Install from python.org or: brew install python3"
+    read -rp "Press Enter to close..."
+    exit 1
+fi
 
-echo "Starting Racing Scoreboard on port $PORT..."
-python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 &
-SERVER_PID=$!
-trap 'kill "$SERVER_PID" 2>/dev/null' EXIT
+if ! python3 -c "import webview" 2>/dev/null; then
+    echo "Installing pywebview (one-time setup, ~5 MB, requires internet)..."
+    python3 -m pip install pywebview --user || {
+        echo ""
+        echo "ERROR: Install failed. Try manually: pip3 install pywebview"
+        read -rp "Press Enter to close..."
+        exit 1
+    }
+    echo "Done! Launching..."
+fi
 
-sleep 0.6
-open "http://127.0.0.1:$PORT/launcher.html"
-
-echo "Scoreboard running at http://127.0.0.1:$PORT/launcher.html"
-echo "Close this window to stop."
-
-wait "$SERVER_PID"
+exec python3 app.py
