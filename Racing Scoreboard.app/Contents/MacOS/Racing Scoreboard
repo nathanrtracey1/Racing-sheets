@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Racing Scoreboard launcher
+# Starts a local HTTP server and opens the launcher in the default browser.
+
+# Resolve the true path of this script (handles symlinks)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# From MacOS/ go up: MacOS -> Contents -> .app -> repo
+REPO_DIR="$(dirname "$(dirname "$(dirname "$SCRIPT_DIR")")")"
+
+# Pick a free port starting at 8765
+PORT=8765
+while lsof -Pi :"$PORT" -sTCP:LISTEN -t >/dev/null 2>&1; do
+  PORT=$((PORT + 1))
+done
+
+# Serve the repo directory via Python's built-in HTTP server
+cd "$REPO_DIR"
+python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 &
+SERVER_PID=$!
+
+# Kill server when this script exits
+trap 'kill "$SERVER_PID" 2>/dev/null' EXIT
+
+# Give the server a moment to start
+sleep 0.6
+
+# Open launcher in the default browser
+open "http://127.0.0.1:$PORT/launcher.html"
+
+# Keep running so the server stays alive
+wait "$SERVER_PID"
